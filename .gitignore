@@ -14,3 +14,6 @@ ui/vite.config.ts.timestamp-*
 
 # Server
 server/src/gen
+
+# Config
+arfak.toml
