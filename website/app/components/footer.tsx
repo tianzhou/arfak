@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer className="border-t-2 border-foreground py-6">
-      <div className="mx-auto max-w-3xl px-6 text-center text-sm">
+      <div className="mx-auto max-w-5xl px-6 text-center text-sm">
         <p>
           &copy; {new Date().getFullYear()} Arfak. All rights reserved.
           &middot;{" "}

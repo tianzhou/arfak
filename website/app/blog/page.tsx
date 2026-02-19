@@ -17,7 +17,7 @@ export default function BlogPage() {
     <div className="min-h-screen">
       <Navbar />
 
-      <main className="mx-auto max-w-3xl px-6 py-16">
+      <main className="mx-auto max-w-5xl px-6 py-16">
         <h1 className="text-3xl font-bold tracking-tight">Blog</h1>
 
         {featured && (
