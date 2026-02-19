@@ -38,7 +38,7 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 border-b-2 border-foreground bg-background">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
+      <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-3">
         <a href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
           <img src="/logo.png" alt="Arfak" width={28} height={28} />
           Arfak

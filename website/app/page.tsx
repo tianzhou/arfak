@@ -4,11 +4,11 @@ import { Footer } from "./components/footer";
 
 function Hero() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-16 md:py-24">
+    <section className="mx-auto max-w-3xl px-6 py-16 md:py-24">
       <MacWindow title="Welcome to Arfak">
         <div className="px-8 py-10 text-center">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Your Open-Source Personal AI Assistant
+            Open-Source Personal AI Assistant for You
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base leading-7">
             Arfak is a private, extensible AI assistant you can run anywhere.
@@ -101,7 +101,7 @@ const features = [
 function Features() {
   return (
     <section id="features" className="py-16">
-      <div className="mx-auto max-w-5xl px-6">
+      <div className="mx-auto max-w-3xl px-6">
         <h2 className="text-center text-2xl font-bold tracking-tight">
           Everything you need
         </h2>

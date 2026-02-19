@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Arfak - Open-Source Personal AI Assistant",
   description:
-    "Your open-source personal AI assistant. Private, extensible, and built for everyone.",
+    "Open-Source Personal AI Assistant for You. Private, extensible, and built for everyone.",
 };
 
 export default function RootLayout({
