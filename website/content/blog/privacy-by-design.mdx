@@ -1,0 +1,46 @@
+---
+title: "Privacy by Design"
+date: "2026-02-15"
+description: "How Arfak keeps your data private by default — no cloud required, no telemetry, full local control."
+featured: false
+---
+
+Privacy isn't an afterthought in Arfak. It's the foundation everything else is built on.
+
+## The Problem with Cloud AI
+
+Every time you send a message to a cloud-hosted assistant, you're trusting a third party with:
+
+- The content of your conversations
+- Metadata about when and how often you interact
+- Any files or documents you upload
+
+Even with strong privacy policies, data breaches happen. Regulations change. Companies get acquired.
+
+## Our Approach
+
+Arfak is designed around three principles:
+
+### 1. Local-First Processing
+
+All inference happens on your machine by default. Your prompts never leave your device unless you explicitly configure an external provider.
+
+### 2. Zero Telemetry
+
+There are no analytics endpoints, no crash reporters, no usage beacons. We don't know how many people use Arfak — and that's by design.
+
+### 3. Transparent Data Storage
+
+Every piece of data Arfak stores lives in a human-readable format on your filesystem. No opaque databases, no binary blobs. You can inspect, export, or delete your data at any time with standard tools.
+
+## When You *Want* the Cloud
+
+Sometimes you need a more powerful model than what runs locally. Arfak supports optional cloud providers, but with guardrails:
+
+- **Explicit opt-in** — cloud backends are never enabled silently
+- **Per-conversation control** — choose which conversations use cloud and which stay local
+- **Provider agnostic** — swap between providers without losing your conversation history
+
+## Trust Through Transparency
+
+Arfak is open source. Every line of code is auditable. If you don't trust our claims, you can verify them yourself — and we encourage it.

@@ -22,25 +22,27 @@ export default function BlogPage() {
 
         {featured && (
           <div className="mt-10">
-            <MacWindow title="Featured">
-              <div className="px-8 py-8">
-                <time className="text-xs">{featured.date}</time>
-                <h2 className="mt-1 text-2xl font-bold">{featured.title}</h2>
-                <p className="mt-3 text-sm leading-6">
-                  {featured.description}
-                </p>
-              </div>
-            </MacWindow>
+            <a href={`/blog/${featured.slug}`}>
+              <MacWindow title="Featured">
+                <div className="px-8 py-8">
+                  <time className="text-xs">{featured.date}</time>
+                  <h2 className="mt-1 text-2xl font-bold">{featured.title}</h2>
+                  <p className="mt-3 text-sm leading-6">
+                    {featured.description}
+                  </p>
+                </div>
+              </MacWindow>
+            </a>
           </div>
         )}
 
         {rest.length > 0 && (
           <div className="mt-10 divide-y-2 divide-foreground border-y-2 border-foreground bg-background">
             {rest.map((post) => (
-              <div key={post.slug} className="flex items-baseline gap-4 px-4 py-3">
+              <a key={post.slug} href={`/blog/${post.slug}`} className="flex items-baseline gap-4 px-4 py-3 hover:bg-foreground/5">
                 <time className="shrink-0 text-xs">{post.date}</time>
                 <h3 className="text-sm font-bold">{post.title}</h3>
-              </div>
+              </a>
             ))}
           </div>
         )}
