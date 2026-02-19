@@ -10,6 +10,8 @@ First post in **How OpenClaw Works** — a series studying patterns from the [Op
 
 Source: [`config-reload.ts`](https://github.com/openclaw/openclaw/blob/9475791d/src/gateway/config-reload.ts)
 
+**Dependencies:** [chokidar](https://github.com/paulmillr/chokidar) — Node.js has built-in `fs.watch`, but it fires duplicate events, misses renames on Linux, and lacks recursive watching on older platforms. Chokidar normalizes these OS quirks and adds `awaitWriteFinish` to handle non-atomic writes — exactly what a config watcher needs.
+
 ## The Problem
 
 OpenClaw's gateway routes messages across WhatsApp, Telegram, Slack, Discord and more. Restarting it drops connections. But config changes are frequent — cron schedules, hooks, channel settings.
