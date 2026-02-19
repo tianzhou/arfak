@@ -1,6 +1,7 @@
 packages:
   - "ui"
   - "server"
+  - "website"
 onlyBuiltDependencies:
   - '@bufbuild/buf'
   - '@swc/core'
