@@ -1,4 +1,5 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
+import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import { Navbar } from "../../components/navbar";
 import { MacWindow } from "../../components/mac-window";
@@ -68,6 +69,17 @@ export default async function BlogPostPage({
                   options={{
                     mdxOptions: {
                       remarkPlugins: [remarkGfm],
+                      rehypePlugins: [
+                        [
+                          rehypePrettyCode,
+                          {
+                            theme: {
+                              light: "github-light",
+                              dark: "github-dark",
+                            },
+                          },
+                        ],
+                      ],
                     },
                   }}
                 />

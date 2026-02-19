@@ -34,6 +34,24 @@ body {
   }
 }
 
+/* Reset inline-code styles inside code blocks */
+pre code {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+/* Syntax highlighting — rehype-pretty-code dual themes */
+[data-rehype-pretty-code-figure] code span {
+  color: var(--shiki-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-rehype-pretty-code-figure] code span {
+    color: var(--shiki-dark);
+  }
+}
+
 /* Classic Mac title bar stripes */
 .mac-title-bar {
   background: repeating-linear-gradient(
