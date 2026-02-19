@@ -1,12 +1,12 @@
 ---
-title: "OpenClaw Code Learn #1 — Config Hot-Reload"
+title: "How OpenClaw Works #1 — Config Hot-Reload"
 date: "2026-02-19"
 description: "How OpenClaw diffs config trees and builds surgical reload plans to avoid unnecessary gateway restarts."
 featured: false
-category: "Code Learn"
+category: "Engineering"
 ---
 
-First post in **OpenClaw Code Learn** — a series studying patterns from the [OpenClaw](https://github.com/openclaw/openclaw) codebase, an open-source personal AI assistant.
+First post in **How OpenClaw Works** — a series studying patterns from the [OpenClaw](https://github.com/openclaw/openclaw) codebase, an open-source personal AI assistant.
 
 Source: [`config-reload.ts`](https://github.com/openclaw/openclaw/blob/9475791d/src/gateway/config-reload.ts)
 
@@ -69,11 +69,11 @@ type ReloadRule = {
 };
 ```
 
-| Kind | Meaning | Example prefixes |
-|------|---------|-----------------|
-| `"hot"` | Apply without restart | `hooks`, `cron`, `browser` |
+| Kind        | Meaning               | Example prefixes                  |
+| ----------- | --------------------- | --------------------------------- |
+| `"hot"`     | Apply without restart | `hooks`, `cron`, `browser`        |
 | `"restart"` | Full restart required | `gateway`, `plugins`, `discovery` |
-| `"none"` | Ignore | `meta`, `logging`, `models` |
+| `"none"`    | Ignore                | `meta`, `logging`, `models`       |
 
 Specific prefixes go first — `gateway.reload` is `"none"` (avoid reload loops) while `gateway` is `"restart"`. First match wins.
 
@@ -85,7 +85,7 @@ listChannelPlugins().flatMap((plugin) =>
     prefix,
     kind: "hot",
     actions: [`restart-channel:${plugin.id}`],
-  }))
+  })),
 );
 ```
 
@@ -105,7 +105,7 @@ type GatewayReloadPlan = {
 };
 ```
 
-Key rule: if *any* path requires restart, the whole plan escalates. Partial hot-reload plus restart is worse than a clean restart.
+Key rule: if _any_ path requires restart, the whole plan escalates. Partial hot-reload plus restart is worse than a clean restart.
 
 Execution depends on the configured mode:
 
@@ -117,12 +117,19 @@ Execution depends on the configured mode:
 ## Concurrency
 
 ```typescript
-if (running) { pending = true; return; }
+if (running) {
+  pending = true;
+  return;
+}
 running = true;
-try { /* reload */ }
-finally {
+try {
+  /* reload */
+} finally {
   running = false;
-  if (pending) { pending = false; schedule(); }
+  if (pending) {
+    pending = false;
+    schedule();
+  }
 }
 ```
 
