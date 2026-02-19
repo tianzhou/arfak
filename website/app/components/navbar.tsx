@@ -13,19 +13,16 @@ export function Navbar() {
           Arfak
         </a>
 
-        <div className="hidden items-center gap-6 md:flex">
-          <a
-            href="#features"
-            className="border-b border-transparent text-sm hover:border-foreground"
-          >
-            Features
-          </a>
+        <div className="hidden items-center md:flex">
           <a
             href="/blog"
             className="border-b border-transparent text-sm hover:border-foreground"
           >
             Blog
           </a>
+        </div>
+
+        <div className="hidden items-center gap-6 md:flex">
           <a
             href="https://github.com/tianzhou/arfak"
             target="_blank"
@@ -90,9 +87,6 @@ export function Navbar() {
       {open && (
         <div className="border-t-2 border-foreground px-6 py-4 md:hidden">
           <div className="flex flex-col gap-4">
-            <a href="#features" className="text-sm">
-              Features
-            </a>
             <a href="/blog" className="text-sm">
               Blog
             </a>
