@@ -1,8 +1,8 @@
 import fs from 'node:fs';
-import path from 'node:path';
+import { watch } from 'chokidar';
 import { parse } from 'smol-toml';
 
-const configPath = process.env.ARFAK_CONFIG ?? path.join(process.cwd(), 'arfak.toml');
+const configPath = process.env.ARFAK_CONFIG ?? 'arfak.toml';
 
 interface ArfakConfig {
   general?: {
@@ -17,19 +17,33 @@ interface ArfakConfig {
 function loadConfig(): ArfakConfig {
   try {
     const content = fs.readFileSync(configPath, 'utf-8');
-    console.log(`Config loaded from ${configPath}`);
     return parse(content) as ArfakConfig;
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      console.log(`No config file found at ${configPath}`);
-    } else {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
       console.error(`Failed to load config from ${configPath}:`, error);
     }
     return {};
   }
 }
 
-const config = loadConfig();
+let config = loadConfig();
+
+const watcher = watch(configPath, { ignoreInitial: true });
+
+watcher.on('all', (event) => {
+  config = loadConfig();
+  if (event === 'unlink') {
+    console.log(`Config file removed: ${configPath}`);
+  } else {
+    console.log(`Config reloaded from ${configPath}`);
+  }
+});
+
+console.log(
+  Object.keys(config).length > 0
+    ? `Config loaded from ${configPath}`
+    : `No config file found at ${configPath}`,
+);
 
 export const configHandlers = {
   async getConfig() {
