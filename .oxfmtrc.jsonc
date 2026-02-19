@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "$schema": "./ui/node_modules/oxfmt/configuration_schema.json",
   "singleQuote": true,
   "experimentalSortImports": {
     "newlinesBetween": false,
@@ -8,14 +8,13 @@
     "sortScripts": true,
   },
   "experimentalTailwindcss": {
-    "stylesheet": "src/App.css",
+    "stylesheet": "ui/src/App.css",
   },
   "ignorePatterns": [
     "coverage/",
     "dist/",
-    "index.html",
     "pnpm-lock.yaml",
-    "src/__generated__/",
-    "src/translations/",
+    "ui/index.html",
+    "ui/src/translations/",
   ],
 }

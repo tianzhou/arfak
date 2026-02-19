@@ -1,3 +1,5 @@
+packages:
+  - "ui"
 onlyBuiltDependencies:
   - '@swc/core'
   - '@tailwindcss/oxide'

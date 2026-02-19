@@ -6,6 +6,6 @@
 coverage/
 dist/
 source_strings.json
-src/translations
-tsconfig.tsbuildinfo
+ui/src/translations
+ui/tsconfig.tsbuildinfo
 vite.config.ts.timestamp-*

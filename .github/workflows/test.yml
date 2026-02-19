@@ -21,5 +21,4 @@ jobs:
         with:
           version: 10.*
       - run: pnpm install
-      - run: pnpm dev:setup
-      - run: pnpm test
+      - run: pnpm --filter @arfak/ui test
