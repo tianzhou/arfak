@@ -4,10 +4,23 @@ package arfak.v1;
 
 service ArfakService {
   rpc Ping(PingRequest) returns (PingResponse);
+  rpc GetConfig(GetConfigRequest) returns (GetConfigResponse);
 }
 
 message PingRequest {}
 
 message PingResponse {
   string pong = 1;
+}
+
+message GetConfigRequest {}
+
+message GetConfigResponse {
+  BannerConfig banner = 1;
+}
+
+message BannerConfig {
+  string text = 1;
+  string link = 2;
+  string color = 3;
 }
