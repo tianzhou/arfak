@@ -18,14 +18,18 @@ function loadConfig(): ArfakConfig {
   try {
     const content = fs.readFileSync(configPath, 'utf-8');
     return parse(content) as ArfakConfig;
-  } catch {
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      console.error('Failed to load config:', error);
+    }
     return {};
   }
 }
 
+const config = loadConfig();
+
 export const configHandlers = {
   async getConfig() {
-    const config = loadConfig();
     const banner = config.general?.banner;
 
     if (!banner?.text) {
