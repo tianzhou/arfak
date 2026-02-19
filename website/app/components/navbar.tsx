@@ -23,7 +23,7 @@ export function Navbar() {
             Features
           </a>
           <a
-            href="https://github.com/ArkFak/arfak"
+            href="https://github.com/tianzhou/arfak"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
@@ -88,7 +88,7 @@ export function Navbar() {
               Features
             </a>
             <a
-              href="https://github.com/ArkFak/arfak"
+              href="https://github.com/tianzhou/arfak"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-zinc-600 dark:text-zinc-400"
@@ -97,7 +97,7 @@ export function Navbar() {
             </a>
             <a
               href="#"
-              className="inline-block rounded-full bg-accent px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+              className="rounded-full bg-accent px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-accent-hover"
             >
               Get Started
             </a>

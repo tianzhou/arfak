@@ -19,7 +19,7 @@ function Hero() {
           Get Started
         </a>
         <a
-          href="https://github.com/ArkFak/arfak"
+          href="https://github.com/tianzhou/arfak"
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-full border border-zinc-300 px-6 py-3 text-base font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
@@ -138,11 +138,11 @@ function Features() {
 function Footer() {
   return (
     <footer className="border-t border-zinc-200 py-8 dark:border-zinc-800">
-      <div className="mx-auto max-w-5xl px-6 text-center text-sm text-zinc-500 dark:text-zinc-500">
+      <div className="mx-auto max-w-5xl px-6 text-center text-sm text-zinc-500">
         <p>
           &copy; {new Date().getFullYear()} Arfak. All rights reserved. &middot;{" "}
           <a
-            href="https://github.com/ArkFak/arfak"
+            href="https://github.com/tianzhou/arfak"
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors hover:text-zinc-900 dark:hover:text-white"
