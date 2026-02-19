@@ -20,7 +20,7 @@
   --card-foreground: var(--n-800);
   --popover: var(--color-white);
   --popover-foreground: var(--n-800);
-  --primary: #00adca;
+  --primary: #0094ad;
   --primary-foreground: var(--color-white);
   --secondary: --alpha(var(--color-black) / 4%);
   --secondary-foreground: var(--n-800);
@@ -38,7 +38,7 @@
   --warning-foreground: var(--color-amber-700);
   --border: --alpha(var(--color-black) / 8%);
   --input: --alpha(var(--color-black) / 10%);
-  --ring: #00adca;
+  --ring: #0094ad;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -46,12 +46,12 @@
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: var(--n-50);
   --sidebar-foreground: color-mix(in srgb, var(--n-800) 64%, var(--sidebar));
-  --sidebar-primary: #00adca;
+  --sidebar-primary: #0094ad;
   --sidebar-primary-foreground: var(--color-white);
   --sidebar-accent: --alpha(var(--color-black) / 4%);
   --sidebar-accent-foreground: var(--n-800);
   --sidebar-border: --alpha(var(--color-black) / 6%);
-  --sidebar-ring: #00adca;
+  --sidebar-ring: #0094ad;
 }
 
 @theme inline {
@@ -115,7 +115,7 @@
   --card-foreground: var(--n-100);
   --popover: color-mix(in srgb, var(--background) 98%, var(--color-white));
   --popover-foreground: var(--n-100);
-  --primary: #33c4de;
+  --primary: #22b8d6;
   --primary-foreground: var(--color-white);
   --secondary: --alpha(var(--color-white) / 4%);
   --secondary-foreground: var(--n-100);
@@ -133,7 +133,7 @@
   --warning-foreground: var(--color-amber-400);
   --border: --alpha(var(--color-white) / 6%);
   --input: --alpha(var(--color-white) / 8%);
-  --ring: #00adca;
+  --ring: #0094ad;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -141,12 +141,12 @@
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: color-mix(in srgb, var(--n-950) 97%, var(--color-white));
   --sidebar-foreground: color-mix(in srgb, var(--n-100) 64%, var(--sidebar));
-  --sidebar-primary: #33c4de;
+  --sidebar-primary: #22b8d6;
   --sidebar-primary-foreground: var(--color-white);
   --sidebar-accent: --alpha(var(--color-white) / 4%);
   --sidebar-accent-foreground: var(--n-100);
   --sidebar-border: --alpha(var(--color-white) / 5%);
-  --sidebar-ring: #00adca;
+  --sidebar-ring: #0094ad;
 }
 
 @layer base {
