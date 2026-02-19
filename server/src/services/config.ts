@@ -17,10 +17,13 @@ interface ArfakConfig {
 function loadConfig(): ArfakConfig {
   try {
     const content = fs.readFileSync(configPath, 'utf-8');
+    console.log(`Config loaded from ${configPath}`);
     return parse(content) as ArfakConfig;
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-      console.error('Failed to load config:', error);
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      console.log(`No config file found at ${configPath}`);
+    } else {
+      console.error(`Failed to load config from ${configPath}:`, error);
     }
     return {};
   }

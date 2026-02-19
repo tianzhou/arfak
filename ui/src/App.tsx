@@ -1,7 +1,15 @@
 import type { BannerConfig } from '@gen/arfak/v1/service_pb.js';
 import { createPromiseClient } from '@connectrpc/connect';
 import { ArfakService } from '@gen/arfak/v1/service_connect.js';
-import { CheckIcon, MonitorIcon, MoonIcon, PaletteIcon, SunIcon, ZapIcon } from 'lucide-react';
+import {
+  CheckIcon,
+  ExternalLinkIcon,
+  MonitorIcon,
+  MoonIcon,
+  PaletteIcon,
+  SunIcon,
+  ZapIcon,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
 import type { ColorTheme, Mode } from './hooks/use-theme.js';
@@ -99,12 +107,13 @@ function Banner({ banner }: { banner: BannerConfig }) {
     >
       {banner.link ? (
         <a
-          className="underline decoration-white/40 hover:decoration-white"
+          className="flex items-center gap-1.5 text-white hover:opacity-80"
           href={banner.link}
           rel="noopener noreferrer"
           target="_blank"
         >
           {content}
+          <ExternalLinkIcon className="size-3.5" />
         </a>
       ) : (
         content

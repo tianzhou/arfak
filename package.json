@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "preinstall": "command -v git >/dev/null 2>&1 && git config core.hooksPath git-hooks || exit 0",
-    "dev": "pnpm -r --parallel dev",
+    "dev": "ARFAK_CONFIG=$PWD/arfak.toml pnpm -r --parallel dev",
     "build": "pnpm --filter @arfak/ui build && pnpm --filter @arfak/server build",
-    "start": "NODE_ENV=production node server/dist/index.js"
+    "start": "ARFAK_CONFIG=$PWD/arfak.toml NODE_ENV=production node server/dist/index.js"
   }
 }
