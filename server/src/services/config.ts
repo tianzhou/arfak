@@ -1,11 +1,23 @@
 import fs from 'node:fs';
 import { watch } from 'chokidar';
 import { parse } from 'smol-toml';
+import {
+  createSubsystemLogger,
+  normalizeLogLevel,
+  setLogFile,
+  setLogLevel,
+} from '../logging/index.js';
+
+const log = createSubsystemLogger('config');
 
 const configPath = process.env.ARFAK_CONFIG ?? 'arfak.toml';
 
 interface ArfakConfig {
   general?: {
+    logging?: {
+      level?: string;
+      file?: string;
+    };
     banner?: {
       text?: string;
       link?: string;
@@ -20,26 +32,37 @@ function loadConfig(): ArfakConfig {
     return parse(content) as ArfakConfig;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-      console.error(`Failed to load config from ${configPath}:`, error);
+      log.error(`Failed to load config from ${configPath}`, {
+        error: String(error),
+      });
     }
     return {};
   }
 }
 
+function applyLoggingConfig(cfg: ArfakConfig): void {
+  setLogLevel(normalizeLogLevel(cfg.general?.logging?.level));
+  if (cfg.general?.logging?.file) {
+    setLogFile(cfg.general.logging.file);
+  }
+}
+
 let config = loadConfig();
+applyLoggingConfig(config);
 
 const watcher = watch(configPath, { ignoreInitial: true });
 
 watcher.on('all', (event) => {
   config = loadConfig();
+  applyLoggingConfig(config);
   if (event === 'unlink') {
-    console.log(`Config file removed: ${configPath}`);
+    log.info(`Config file removed: ${configPath}`);
   } else {
-    console.log(`Config reloaded from ${configPath}`);
+    log.info(`Config reloaded from ${configPath}`);
   }
 });
 
-console.log(
+log.info(
   Object.keys(config).length > 0
     ? `Config loaded from ${configPath}`
     : `No config file found at ${configPath}`,

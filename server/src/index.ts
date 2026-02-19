@@ -1,8 +1,11 @@
 import http from 'node:http';
 import path from 'node:path';
 import { connectNodeAdapter } from '@connectrpc/connect-node';
+import { createSubsystemLogger } from './logging/index.js';
 import routes from './routes.js';
 import { createStaticHandler } from './static.js';
+
+const log = createSubsystemLogger('server');
 
 const connectHandler = connectNodeAdapter({ routes });
 
@@ -20,5 +23,5 @@ const server = http.createServer((req, res) => {
 
 const port = parseInt(process.env.PORT ?? '3000', 10);
 server.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`);
+  log.info(`Server listening on http://localhost:${port}`);
 });
