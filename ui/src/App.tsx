@@ -1,6 +1,6 @@
+import type { BannerConfig } from '@gen/arfak/v1/service_pb.js';
 import { createPromiseClient } from '@connectrpc/connect';
 import { ArfakService } from '@gen/arfak/v1/service_connect.js';
-import { BannerConfig } from '@gen/arfak/v1/service_pb.js';
 import { CheckIcon, MonitorIcon, MoonIcon, PaletteIcon, SunIcon, ZapIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
@@ -95,7 +95,7 @@ function Banner({ banner }: { banner: BannerConfig }) {
   return (
     <div
       className="flex h-9 shrink-0 items-center justify-center px-4"
-      style={{ backgroundColor: banner.color || undefined }}
+      style={{ backgroundColor: banner.color || '#6b7280' }}
     >
       {banner.link ? (
         <a
@@ -124,7 +124,9 @@ export default function App() {
           setBanner(res.banner);
         }
       })
-      .catch(() => {});
+      .catch((err: unknown) => {
+        console.warn('[GetConfig] Failed to fetch config:', err);
+      });
   }, []);
 
   return (
