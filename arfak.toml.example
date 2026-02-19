@@ -1,0 +1,4 @@
+[general.banner]
+text = "System maintenance scheduled for Sunday 2am UTC"
+link = "https://status.example.com"
+color = "#7c3aed"
