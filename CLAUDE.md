@@ -53,6 +53,28 @@ pnpm --filter @arfak/server tsc:check # TypeScript type checking
 - `ui/src/App.tsx` — Root component with React Router routes and shared layout
 - `ui/src/lib/` — Shared utilities
 - `ui/src/hooks/` — Custom React hooks (theme management)
+- `server/src/logging/` — Structured logging with subsystem loggers
+- `server/src/lib/` — Shared server utilities
+- `server/src/services/` — ConnectRPC service handlers
+
+## Logging
+
+Use `createSubsystemLogger` for all server logging — never use `console.log` directly.
+
+```typescript
+import { createSubsystemLogger } from '../logging/index.js';
+const log = createSubsystemLogger('my-subsystem');
+log.info('message', { key: 'value' });
+```
+
+- **Levels:** `silent | fatal | error | warn | info | debug | trace` (default: `info`)
+- **Console:** Pretty with colors (TTY) or compact with ISO timestamps (non-TTY)
+- **File:** JSONL to `/tmp/arfak/arfak-YYYY-MM-DD.log` (macOS/Linux)
+- **Config:** `[general.logging]` in `arfak.toml` with `level` and `file` (strftime pattern) options, hot-reloaded
+
+## Planning
+
+Write implementation plans to `plans/` directory before starting multi-step tasks.
 
 ## CI
 

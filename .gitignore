@@ -17,3 +17,6 @@ server/src/gen
 
 # Config
 arfak.toml
+
+# Plans
+plans/
