@@ -35,15 +35,11 @@ export default function BlogPage() {
         )}
 
         {rest.length > 0 && (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2">
+          <div className="mt-10 divide-y-2 divide-foreground border-y-2 border-foreground bg-background">
             {rest.map((post) => (
-              <div
-                key={post.slug}
-                className="border-2 border-foreground bg-background p-5 shadow-[2px_2px_0_0_var(--foreground)]"
-              >
-                <time className="text-xs">{post.date}</time>
-                <h3 className="mt-1 text-base font-bold">{post.title}</h3>
-                <p className="mt-2 text-sm leading-6">{post.description}</p>
+              <div key={post.slug} className="flex items-baseline gap-4 px-4 py-3">
+                <time className="shrink-0 text-xs">{post.date}</time>
+                <h3 className="text-sm font-bold">{post.title}</h3>
               </div>
             ))}
           </div>
