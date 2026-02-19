@@ -3,7 +3,7 @@ import { getAllPosts } from "./lib/blog";
 
 export const dynamic = "force-static";
 
-const BASE_URL = "https://arfak.com";
+const BASE_URL = "https://www.arfak.ai";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts().map((post) => ({
