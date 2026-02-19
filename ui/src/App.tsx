@@ -90,7 +90,7 @@ function Banner({ banner }: { banner: BannerConfig }) {
   return (
     <div
       className="flex h-9 shrink-0 items-center justify-center px-4"
-      style={{ backgroundColor: banner.color || '#6b7280' }}
+      style={{ backgroundColor: banner.color || '#0094ad' }}
     >
       {banner.link ? (
         <a
