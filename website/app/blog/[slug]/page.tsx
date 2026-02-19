@@ -47,7 +47,10 @@ export default async function BlogPostPage({
           <MacWindow title={post.meta.title}>
             <article className="px-8 py-8">
               <header className="mb-6">
-                <time className="text-xs">{post.meta.date}</time>
+                <div className="flex items-center gap-2">
+                  <time className="text-xs">{post.meta.date}</time>
+                  <span className="border border-foreground px-1.5 py-0.5 text-xs font-medium">{post.meta.category}</span>
+                </div>
                 <h1 className="mt-1 text-2xl font-bold tracking-tight">
                   {post.meta.title}
                 </h1>

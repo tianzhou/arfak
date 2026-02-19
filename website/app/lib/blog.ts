@@ -8,6 +8,7 @@ export interface Post {
   date: string;
   description: string;
   featured: boolean;
+  category: string;
 }
 
 const postsDirectory = path.join(process.cwd(), "content/blog");
@@ -24,6 +25,7 @@ function readPost(slug: string) {
     date: data.date,
     description: data.description,
     featured: data.featured ?? false,
+    category: data.category ?? "Product",
   };
   return { meta, content };
 }
