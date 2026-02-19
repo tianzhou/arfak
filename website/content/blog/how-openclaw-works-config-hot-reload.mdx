@@ -19,7 +19,11 @@ The goal: **apply config changes with the minimum disruption possible.**
 ## The Pipeline
 
 ```
-File change (chokidar) → Debounce → Diff config trees → Classify paths → Execute plan
+File change (chokidar)
+  → Debounce
+    → Diff config trees
+      → Classify paths
+        → Execute plan
 ```
 
 ## Watch & Debounce
