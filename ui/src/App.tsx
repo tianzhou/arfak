@@ -1,6 +1,8 @@
 import { createPromiseClient } from '@connectrpc/connect';
 import { ArfakService } from '@gen/arfak/v1/service_connect.js';
+import { BannerConfig } from '@gen/arfak/v1/service_pb.js';
 import { CheckIcon, MonitorIcon, MoonIcon, PaletteIcon, SunIcon, ZapIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
 import type { ColorTheme, Mode } from './hooks/use-theme.js';
 import ChatPage from './chat/ChatPage.js';
@@ -87,13 +89,51 @@ function AppHeader() {
   );
 }
 
+function Banner({ banner }: { banner: BannerConfig }) {
+  const content = <span className="text-sm font-medium text-white">{banner.text}</span>;
+
+  return (
+    <div
+      className="flex h-9 shrink-0 items-center justify-center px-4"
+      style={{ backgroundColor: banner.color || undefined }}
+    >
+      {banner.link ? (
+        <a
+          className="underline decoration-white/40 hover:decoration-white"
+          href={banner.link}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {content}
+        </a>
+      ) : (
+        content
+      )}
+    </div>
+  );
+}
+
 export default function App() {
+  const [banner, setBanner] = useState<BannerConfig | null>(null);
+
+  useEffect(() => {
+    client
+      .getConfig({})
+      .then((res) => {
+        if (res.banner?.text) {
+          setBanner(res.banner);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <ToastProvider>
       <div className="relative isolate flex h-svh flex-col">
+        {banner && <Banner banner={banner} />}
         <AppHeader />
         <SidebarProvider className="!min-h-0 flex-1">
-          <AppSidebar />
+          <AppSidebar hasBanner={!!banner} />
           <SidebarInset>
             <Routes>
               <Route element={<ChatPage />} path="/" />
