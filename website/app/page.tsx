@@ -18,7 +18,7 @@ function Hero() {
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
               href="#"
-              className="border-[3px] border-foreground bg-foreground px-6 py-2.5 text-base font-bold text-background hover:bg-background hover:text-foreground"
+              className="border-[3px] border-accent bg-accent px-6 py-2.5 text-base font-bold text-white shadow-[3px_3px_0_0_var(--foreground)] hover:bg-background hover:text-accent"
             >
               Get Started
             </a>

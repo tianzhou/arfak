@@ -45,7 +45,7 @@ export function Navbar() {
           </a>
           <a
             href="#"
-            className="border-2 border-foreground bg-foreground px-4 py-1.5 text-sm font-medium text-background hover:bg-background hover:text-foreground"
+            className="border-2 border-accent bg-accent px-4 py-1.5 text-sm font-medium text-white shadow-[2px_2px_0_0_var(--foreground)] hover:bg-background hover:text-accent"
           >
             Get Started
           </a>
@@ -115,7 +115,7 @@ export function Navbar() {
             </a>
             <a
               href="#"
-              className="border-2 border-foreground bg-foreground px-4 py-1.5 text-center text-sm font-medium text-background hover:bg-background hover:text-foreground"
+              className="border-2 border-accent bg-accent px-4 py-1.5 text-center text-sm font-medium text-white shadow-[2px_2px_0_0_var(--foreground)] hover:bg-background hover:text-accent"
             >
               Get Started
             </a>
