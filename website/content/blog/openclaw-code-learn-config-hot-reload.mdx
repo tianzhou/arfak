@@ -1,0 +1,138 @@
+---
+title: "OpenClaw Code Learn #1 — Config Hot-Reload"
+date: "2026-02-19"
+description: "How OpenClaw diffs config trees and builds surgical reload plans to avoid unnecessary gateway restarts."
+featured: false
+category: "Code Learn"
+---
+
+First post in **OpenClaw Code Learn** — a series studying patterns from the [OpenClaw](https://github.com/openclaw/openclaw) codebase, an open-source personal AI assistant.
+
+Source: [`config-reload.ts`](https://github.com/openclaw/openclaw/blob/9475791d/src/gateway/config-reload.ts)
+
+## The Problem
+
+OpenClaw's gateway routes messages across WhatsApp, Telegram, Slack, Discord and more. Restarting it drops connections. But config changes are frequent — cron schedules, hooks, channel settings.
+
+The goal: **apply config changes with the minimum disruption possible.**
+
+## The Pipeline
+
+```
+File change (chokidar) → Debounce → Diff config trees → Classify paths → Execute plan
+```
+
+## Watch & Debounce
+
+```typescript
+const watcher = chokidar.watch(opts.watchPath, {
+  ignoreInitial: true,
+  awaitWriteFinish: { stabilityThreshold: 200, pollInterval: 50 },
+});
+
+watcher.on("change", schedule);
+```
+
+`awaitWriteFinish` prevents partial reads from non-atomic editor writes. The `schedule` function debounces at 300ms by default — configurable via `gateway.reload.debounceMs`.
+
+## Diff by Path, Not by File
+
+Instead of "did the file change?", OpenClaw asks "**which config paths changed?**"
+
+```typescript
+function diffConfigPaths(prev: unknown, next: unknown, prefix = ""): string[] {
+  if (prev === next) return [];
+  if (isPlainObject(prev) && isPlainObject(next)) {
+    const keys = new Set([...Object.keys(prev), ...Object.keys(next)]);
+    const paths: string[] = [];
+    for (const key of keys) {
+      const childPrefix = prefix ? `${prefix}.${key}` : key;
+      paths.push(...diffConfigPaths(prev[key], next[key], childPrefix));
+    }
+    return paths;
+  }
+  return [prefix || "<root>"];
+}
+```
+
+Changing `cron.interval` from `"5m"` to `"10m"` returns `["cron.interval"]`. This granularity is what makes surgical reloads possible.
+
+## Reload Rules
+
+Each changed path is matched against ordered rules:
+
+```typescript
+type ReloadRule = {
+  prefix: string;
+  kind: "restart" | "hot" | "none";
+  actions?: ReloadAction[];
+};
+```
+
+| Kind | Meaning | Example prefixes |
+|------|---------|-----------------|
+| `"hot"` | Apply without restart | `hooks`, `cron`, `browser` |
+| `"restart"` | Full restart required | `gateway`, `plugins`, `discovery` |
+| `"none"` | Ignore | `meta`, `logging`, `models` |
+
+Specific prefixes go first — `gateway.reload` is `"none"` (avoid reload loops) while `gateway` is `"restart"`. First match wins.
+
+Plugins contribute their own rules dynamically:
+
+```typescript
+listChannelPlugins().flatMap((plugin) =>
+  (plugin.reload?.configPrefixes ?? []).map((prefix) => ({
+    prefix,
+    kind: "hot",
+    actions: [`restart-channel:${plugin.id}`],
+  }))
+);
+```
+
+The WhatsApp plugin declares "if `channels.whatsapp.*` changes, hot-reload me" — the core system knows nothing about WhatsApp.
+
+## The Reload Plan
+
+All paths roll up into a flat plan:
+
+```typescript
+type GatewayReloadPlan = {
+  restartGateway: boolean;
+  reloadHooks: boolean;
+  restartCron: boolean;
+  restartChannels: Set<ChannelKind>;
+  // ...
+};
+```
+
+Key rule: if *any* path requires restart, the whole plan escalates. Partial hot-reload plus restart is worse than a clean restart.
+
+Execution depends on the configured mode:
+
+- **`"hybrid"`** (default) — hot-reload when possible, restart when necessary
+- **`"hot"`** — only hot-reloadable changes; skip restart-requiring ones
+- **`"restart"`** — always restart
+- **`"off"`** — watch and log, never act
+
+## Concurrency
+
+```typescript
+if (running) { pending = true; return; }
+running = true;
+try { /* reload */ }
+finally {
+  running = false;
+  if (pending) { pending = false; schedule(); }
+}
+```
+
+Overlapping changes coalesce. No reload storms, no lost changes.
+
+## Takeaways
+
+1. **Diff config trees, not files** — path-level granularity turns most edits into no-ops
+2. **Declarative reload rules** — adding a config section means adding one line, not branching logic
+3. **Let plugins own their reload behavior** — the core doesn't need to know about every integration
+4. **Unknown paths default to restart** — safer to restart unnecessarily than miss a change
+
+Next in the series: OpenClaw's plugin lifecycle system.
