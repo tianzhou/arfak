@@ -23,7 +23,26 @@ Out of the box, Arfak ships with a core set of capabilities:
 1. **Natural-language chat** with configurable LLM backends
 2. **File and document understanding** for local knowledge bases
 3. **Task automation** through composable plugins
-4. **Multi-modal input** including voice and images
+
+## Privacy by Design
+
+Privacy isn't an afterthought in Arfak. It's the foundation everything else is built on.
+
+Every time you send a message to a cloud-hosted assistant, you're trusting a third party with the content of your conversations, metadata about when and how often you interact, and any files or documents you upload. Even with strong privacy policies, data breaches happen. Regulations change. Companies get acquired.
+
+Arfak is designed around three principles:
+
+### 1. Local-First Processing
+
+All inference happens on your machine by default. Your prompts never leave your device unless you explicitly configure an external provider.
+
+### 2. Zero Telemetry
+
+There are no analytics endpoints, no crash reporters, no usage beacons. We don't know how many people use Arfak — and that's by design.
+
+### 3. Transparent Data Storage
+
+Every piece of data Arfak stores lives in a human-readable format on your filesystem. No opaque databases, no binary blobs. You can inspect, export, or delete your data at any time with standard tools.
 
 ## Getting Started
 
@@ -39,4 +58,4 @@ That's it. Open `http://localhost:3000` and start chatting.
 
 ## What's Next
 
-We have an ambitious roadmap ahead — better plugin APIs, a marketplace for community extensions, and first-class mobile support. Follow along on [GitHub](https://github.com/tianzhou/arfak) and help us shape the future of personal AI.
+We have an ambitious roadmap ahead - Follow along on [GitHub](https://github.com/tianzhou/arfak) and help us shape the future of personal AI.
