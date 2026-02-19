@@ -1,32 +1,62 @@
 import { Navbar } from "./components/navbar";
 
+function MacWindow({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border-2 border-foreground shadow-[4px_4px_0_0_var(--foreground)]">
+      <div className="flex items-center border-b-2 border-foreground">
+        <div className="flex h-6 w-6 items-center justify-center border-r-2 border-foreground">
+          <div className="h-2.5 w-2.5 border border-foreground" />
+        </div>
+        <div className="mac-title-bar relative flex-1 py-1.5">
+          <span className="absolute inset-0 flex items-center justify-center">
+            <span className="bg-background px-3 text-sm font-bold">
+              {title}
+            </span>
+          </span>
+        </div>
+      </div>
+      <div className="bg-background">{children}</div>
+    </div>
+  );
+}
+
 function Hero() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-24 text-center md:py-32">
-      <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl md:text-6xl dark:text-white">
-        Your Open-Source Personal{" "}
-        <span className="text-accent">AI Assistant</span>
-      </h1>
-      <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-        Arfak is a private, extensible AI assistant you can run anywhere. Built
-        in the open, designed to work for you — not the other way around.
-      </p>
-      <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <a
-          href="#"
-          className="rounded-full bg-accent px-6 py-3 text-base font-medium text-white transition-colors hover:bg-accent-hover"
-        >
-          Get Started
-        </a>
-        <a
-          href="https://github.com/tianzhou/arfak"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-full border border-zinc-300 px-6 py-3 text-base font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-        >
-          GitHub
-        </a>
-      </div>
+    <section className="mx-auto max-w-3xl px-6 py-16 md:py-24">
+      <MacWindow title="Welcome to Arfak">
+        <div className="px-8 py-10 text-center">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+            Your Open-Source Personal AI Assistant
+          </h1>
+          <p className="mx-auto mt-6 max-w-xl text-base leading-7">
+            Arfak is a private, extensible AI assistant you can run anywhere.
+            Built in the open, designed to work for you — not the other way
+            around.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <a
+              href="#"
+              className="border-[3px] border-foreground bg-foreground px-6 py-2.5 text-base font-bold text-background hover:bg-background hover:text-foreground"
+            >
+              Get Started
+            </a>
+            <a
+              href="https://github.com/tianzhou/arfak"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-2 border-foreground px-6 py-2.5 text-base font-medium hover:bg-foreground hover:text-background"
+            >
+              GitHub
+            </a>
+          </div>
+        </div>
+      </MacWindow>
     </section>
   );
 }
@@ -39,15 +69,12 @@ const features = [
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
+        width="20"
+        height="20"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-accent"
       >
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       </svg>
@@ -60,15 +87,12 @@ const features = [
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
+        width="20"
+        height="20"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-accent"
       >
         <rect x="3" y="3" width="7" height="7" />
         <rect x="14" y="3" width="7" height="7" />
@@ -84,15 +108,12 @@ const features = [
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
+        width="20"
+        height="20"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-accent"
       >
         <polyline points="16 18 22 12 16 6" />
         <polyline points="8 6 2 12 8 18" />
@@ -103,30 +124,26 @@ const features = [
 
 function Features() {
   return (
-    <section id="features" className="border-t border-zinc-200 bg-zinc-50 py-20 dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="mx-auto max-w-5xl px-6">
-        <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
+    <section id="features" className="py-16">
+      <div className="mx-auto max-w-3xl px-6">
+        <h2 className="text-center text-2xl font-bold tracking-tight">
           Everything you need
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-zinc-600 dark:text-zinc-400">
+        <p className="mx-auto mt-4 max-w-xl text-center text-base">
           A personal AI assistant that respects your privacy and adapts to your
           workflow.
         </p>
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900"
+              className="border-2 border-foreground p-5 shadow-[2px_2px_0_0_var(--foreground)]"
             >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10">
+              <div className="mb-3 flex h-8 w-8 items-center justify-center border border-foreground">
                 {feature.icon}
               </div>
-              <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                {feature.title}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-                {feature.description}
-              </p>
+              <h3 className="text-base font-bold">{feature.title}</h3>
+              <p className="mt-2 text-sm leading-6">{feature.description}</p>
             </div>
           ))}
         </div>
@@ -137,15 +154,16 @@ function Features() {
 
 function Footer() {
   return (
-    <footer className="border-t border-zinc-200 py-8 dark:border-zinc-800">
-      <div className="mx-auto max-w-5xl px-6 text-center text-sm text-zinc-500">
+    <footer className="border-t-2 border-foreground py-6">
+      <div className="mx-auto max-w-3xl px-6 text-center text-sm">
         <p>
-          &copy; {new Date().getFullYear()} Arfak. All rights reserved. &middot;{" "}
+          &copy; {new Date().getFullYear()} Arfak. All rights reserved.
+          &middot;{" "}
           <a
             href="https://github.com/tianzhou/arfak"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-zinc-900 dark:hover:text-white"
+            className="border-b border-foreground hover:bg-foreground hover:text-background"
           >
             GitHub
           </a>

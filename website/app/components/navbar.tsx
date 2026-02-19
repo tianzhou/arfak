@@ -6,19 +6,16 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <a
-          href="/"
-          className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white"
-        >
+    <nav className="sticky top-0 z-50 border-b-2 border-foreground bg-background">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
+        <a href="/" className="text-xl font-bold tracking-tight">
           Arfak
         </a>
 
         <div className="hidden items-center gap-6 md:flex">
           <a
             href="#features"
-            className="text-sm text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            className="border-b border-transparent text-sm hover:border-foreground"
           >
             Features
           </a>
@@ -26,13 +23,13 @@ export function Navbar() {
             href="https://github.com/tianzhou/arfak"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+            className="border-b border-transparent text-sm hover:border-foreground"
           >
             GitHub
           </a>
           <a
             href="#"
-            className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+            className="border-2 border-foreground bg-foreground px-4 py-1.5 text-sm font-medium text-background hover:bg-background hover:text-foreground"
           >
             Get Started
           </a>
@@ -40,7 +37,7 @@ export function Navbar() {
 
         <button
           onClick={() => setOpen(!open)}
-          className="text-zinc-600 md:hidden dark:text-zinc-400"
+          className="md:hidden"
           aria-label="Toggle menu"
         >
           {open ? (
@@ -52,8 +49,6 @@ export function Navbar() {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
             >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -67,8 +62,6 @@ export function Navbar() {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
             >
               <line x1="3" y1="12" x2="21" y2="12" />
               <line x1="3" y1="6" x2="21" y2="6" />
@@ -79,25 +72,22 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="border-t border-zinc-200 px-6 py-4 md:hidden dark:border-zinc-800">
+        <div className="border-t-2 border-foreground px-6 py-4 md:hidden">
           <div className="flex flex-col gap-4">
-            <a
-              href="#features"
-              className="text-sm text-zinc-600 dark:text-zinc-400"
-            >
+            <a href="#features" className="text-sm">
               Features
             </a>
             <a
               href="https://github.com/tianzhou/arfak"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-zinc-600 dark:text-zinc-400"
+              className="text-sm"
             >
               GitHub
             </a>
             <a
               href="#"
-              className="rounded-full bg-accent px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+              className="border-2 border-foreground bg-foreground px-4 py-1.5 text-center text-sm font-medium text-background hover:bg-background hover:text-foreground"
             >
               Get Started
             </a>
