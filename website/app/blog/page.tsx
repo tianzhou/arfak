@@ -39,7 +39,7 @@ export default function BlogPage() {
             {rest.map((post) => (
               <div
                 key={post.slug}
-                className="border-2 border-foreground p-5 shadow-[2px_2px_0_0_var(--foreground)]"
+                className="border-2 border-foreground bg-background p-5 shadow-[2px_2px_0_0_var(--foreground)]"
               >
                 <time className="text-xs">{post.date}</time>
                 <h3 className="mt-1 text-base font-bold">{post.title}</h3>

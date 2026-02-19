@@ -113,7 +113,7 @@ function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="border-2 border-foreground p-5 shadow-[2px_2px_0_0_var(--foreground)]"
+              className="border-2 border-foreground bg-background p-5 shadow-[2px_2px_0_0_var(--foreground)]"
             >
               <div className="mb-3 flex h-8 w-8 items-center justify-center border border-foreground">
                 {feature.icon}
