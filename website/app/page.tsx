@@ -1,30 +1,6 @@
 import { Navbar } from "./components/navbar";
-
-function MacWindow({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="border-2 border-foreground shadow-[4px_4px_0_0_var(--foreground)]">
-      <div className="flex items-center border-b-2 border-foreground">
-        <div className="flex h-6 w-6 items-center justify-center border-r-2 border-foreground">
-          <div className="h-2.5 w-2.5 border border-foreground" />
-        </div>
-        <div className="mac-title-bar relative flex-1 py-1.5">
-          <span className="absolute inset-0 flex items-center justify-center">
-            <span className="bg-background px-3 text-sm font-bold">
-              {title}
-            </span>
-          </span>
-        </div>
-      </div>
-      <div className="bg-background">{children}</div>
-    </div>
-  );
-}
+import { MacWindow } from "./components/mac-window";
+import { Footer } from "./components/footer";
 
 function Hero() {
   return (
@@ -149,27 +125,6 @@ function Features() {
         </div>
       </div>
     </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t-2 border-foreground py-6">
-      <div className="mx-auto max-w-3xl px-6 text-center text-sm">
-        <p>
-          &copy; {new Date().getFullYear()} Arfak. All rights reserved.
-          &middot;{" "}
-          <a
-            href="https://github.com/tianzhou/arfak"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border-b border-foreground hover:bg-foreground hover:text-background"
-          >
-            GitHub
-          </a>
-        </p>
-      </div>
-    </footer>
   );
 }
 

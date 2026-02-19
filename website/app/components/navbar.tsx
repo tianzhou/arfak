@@ -21,6 +21,12 @@ export function Navbar() {
             Features
           </a>
           <a
+            href="/blog"
+            className="border-b border-transparent text-sm hover:border-foreground"
+          >
+            Blog
+          </a>
+          <a
             href="https://github.com/tianzhou/arfak"
             target="_blank"
             rel="noopener noreferrer"
@@ -86,6 +92,9 @@ export function Navbar() {
           <div className="flex flex-col gap-4">
             <a href="#features" className="text-sm">
               Features
+            </a>
+            <a href="/blog" className="text-sm">
+              Blog
             </a>
             <a
               href="https://github.com/tianzhou/arfak"
