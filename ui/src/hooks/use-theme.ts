@@ -2,40 +2,25 @@ import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 type Mode = 'light' | 'dark' | 'system';
 
-type ColorTheme = 'neutral' | 'blue';
-
-const STORAGE_KEY = 'arfak-appearance';
+const STORAGE_KEY = 'arfak-mode';
 
 const VALID_MODES: Mode[] = ['light', 'dark', 'system'];
-const VALID_COLORS: ColorTheme[] = ['neutral', 'blue'];
-const THEME_CLASSES: ColorTheme[] = ['blue'];
 
-interface Appearance {
-  mode: Mode;
-  color: ColorTheme;
-}
-
-function loadAppearance(): Appearance {
+function loadMode(): Mode {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Partial<Appearance>;
-      return {
-        mode: VALID_MODES.includes(parsed.mode as Mode) ? (parsed.mode as Mode) : 'system',
-        color: VALID_COLORS.includes(parsed.color as ColorTheme)
-          ? (parsed.color as ColorTheme)
-          : 'neutral',
-      };
+    if (raw && VALID_MODES.includes(raw as Mode)) {
+      return raw as Mode;
     }
   } catch {
-    // localStorage unavailable or invalid JSON
+    // localStorage unavailable
   }
-  return { mode: 'system', color: 'neutral' };
+  return 'system';
 }
 
-function saveAppearance(appearance: Appearance) {
+function saveMode(mode: Mode) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appearance));
+    localStorage.setItem(STORAGE_KEY, mode);
   } catch {
     // localStorage unavailable
   }
@@ -47,17 +32,7 @@ function applyMode(mode: Mode) {
   document.documentElement.classList.toggle('dark', dark);
 }
 
-function applyColor(color: ColorTheme) {
-  const cl = document.documentElement.classList;
-  for (const c of THEME_CLASSES) {
-    cl.remove(`theme-${c}`);
-  }
-  if (color !== 'neutral') {
-    cl.add(`theme-${color}`);
-  }
-}
-
-let state: Appearance = loadAppearance();
+let state: Mode = loadMode();
 
 const listeners = new Set<() => void>();
 function subscribe(listener: () => void) {
@@ -72,40 +47,27 @@ function notify() {
 }
 
 export function useTheme() {
-  const current = useSyncExternalStore(subscribe, getSnapshot, () => state);
+  const mode = useSyncExternalStore(subscribe, getSnapshot, () => state);
 
-  const setMode = useCallback((mode: Mode) => {
-    state = { ...state, mode };
-    saveAppearance(state);
-    applyMode(mode);
-    notify();
-  }, []);
-
-  const setColor = useCallback((color: ColorTheme) => {
-    state = { ...state, color };
-    saveAppearance(state);
-    applyColor(color);
+  const setMode = useCallback((m: Mode) => {
+    state = m;
+    saveMode(m);
+    applyMode(m);
     notify();
   }, []);
 
   useEffect(() => {
-    applyMode(current.mode);
-    applyColor(current.color);
+    applyMode(mode);
 
-    if (current.mode === 'system') {
+    if (mode === 'system') {
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       const handler = () => applyMode('system');
       mq.addEventListener('change', handler);
       return () => mq.removeEventListener('change', handler);
     }
-  }, [current.mode, current.color]);
+  }, [mode]);
 
-  return {
-    mode: current.mode,
-    setMode,
-    colorTheme: current.color,
-    setColor,
-  } as const;
+  return { mode, setMode } as const;
 }
 
-export type { ColorTheme, Mode };
+export type { Mode };
