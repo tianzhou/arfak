@@ -1,4 +1,6 @@
-import { CheckIcon, MonitorIcon, MoonIcon, PaletteIcon, SunIcon } from 'lucide-react';
+import { createPromiseClient } from '@connectrpc/connect';
+import { ArfakService } from '@gen/arfak/v1/service_connect.js';
+import { CheckIcon, MonitorIcon, MoonIcon, PaletteIcon, SunIcon, ZapIcon } from 'lucide-react';
 import { Route, Routes } from 'react-router';
 import type { ColorTheme, Mode } from './hooks/use-theme.js';
 import ChatPage from './chat/ChatPage.js';
@@ -6,7 +8,9 @@ import AppSidebar from './components/AppSidebar.js';
 import { Button } from './components/ui/button.js';
 import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from './components/ui/menu.js';
 import { SidebarInset, SidebarProvider } from './components/ui/sidebar.js';
+import { ToastProvider, toastManager } from './components/ui/toast.js';
 import { useTheme } from './hooks/use-theme.js';
+import { transport } from './lib/connect.js';
 
 const COLOR_THEMES: { value: ColorTheme; label: string; swatch: string }[] = [
   { value: 'neutral', label: 'Neutral', swatch: 'bg-neutral-600' },
@@ -52,27 +56,51 @@ function ThemeToggle() {
   );
 }
 
+const client = createPromiseClient(ArfakService, transport);
+
+function PingButton() {
+  const handlePing = async () => {
+    try {
+      const res = await client.ping({});
+      toastManager.add({ title: res.pong, type: 'success' });
+    } catch {
+      toastManager.add({ title: 'Ping failed', type: 'error' });
+    }
+  };
+
+  return (
+    <Button onClick={handlePing} size="icon-sm" variant="ghost">
+      <ZapIcon />
+    </Button>
+  );
+}
+
 function AppHeader() {
   return (
     <header className="flex h-12 shrink-0 items-center justify-between border-b px-4">
       <span className="text-sm font-semibold">Arfak</span>
-      <ThemeToggle />
+      <div className="flex items-center gap-1">
+        <PingButton />
+        <ThemeToggle />
+      </div>
     </header>
   );
 }
 
 export default function App() {
   return (
-    <div className="relative isolate flex h-svh flex-col">
-      <AppHeader />
-      <SidebarProvider className="!min-h-0 flex-1">
-        <AppSidebar />
-        <SidebarInset>
-          <Routes>
-            <Route element={<ChatPage />} path="/" />
-          </Routes>
-        </SidebarInset>
-      </SidebarProvider>
-    </div>
+    <ToastProvider>
+      <div className="relative isolate flex h-svh flex-col">
+        <AppHeader />
+        <SidebarProvider className="!min-h-0 flex-1">
+          <AppSidebar />
+          <SidebarInset>
+            <Routes>
+              <Route element={<ChatPage />} path="/" />
+            </Routes>
+          </SidebarInset>
+        </SidebarProvider>
+      </div>
+    </ToastProvider>
   );
 }

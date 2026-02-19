@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package arfak.v1;
+
+service ArfakService {
+  rpc Ping(PingRequest) returns (PingResponse);
+}
+
+message PingRequest {}
+
+message PingResponse {
+  string pong = 1;
+}

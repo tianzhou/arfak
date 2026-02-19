@@ -16,6 +16,14 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@gen': path.resolve(__dirname, '../server/src/gen'),
+    },
+  },
+  server: {
+    proxy: {
+      '/arfak.v1.': {
+        target: 'http://localhost:3000',
+      },
     },
   },
 });

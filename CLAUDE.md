@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Monorepo managed by pnpm workspaces:
 - `ui/` — Frontend (React SPA)
+- `server/` — Backend (Node.js + ConnectRPC)
 
 ## Build & Development Commands
 
@@ -19,6 +20,14 @@ pnpm --filter @arfak/ui vitest:run   # Run unit tests once
 pnpm --filter @arfak/ui lint         # Run oxlint
 pnpm --filter @arfak/ui lint:format  # Check formatting (oxfmt)
 pnpm --filter @arfak/ui format       # Auto-format code with oxfmt
+```
+
+```bash
+# Server (from root)
+pnpm --filter @arfak/server dev       # Start dev server with watch mode
+pnpm --filter @arfak/server gen       # Generate protobuf/ConnectRPC code
+pnpm --filter @arfak/server build     # Production build
+pnpm --filter @arfak/server tsc:check # TypeScript type checking
 ```
 
 ## Tech Stack
@@ -47,4 +56,4 @@ pnpm --filter @arfak/ui format       # Auto-format code with oxfmt
 
 ## CI
 
-GitHub Actions runs `pnpm --filter @arfak/ui test` on push to `main` (Ubuntu, Node 24).
+GitHub Actions runs `pnpm --filter @arfak/ui test` and `pnpm --filter @arfak/server tsc:check` on push to `main` (Ubuntu, Node 24).

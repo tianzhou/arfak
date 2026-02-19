@@ -1,0 +1,23 @@
+{
+  "name": "@arfak/server",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "gen": "buf generate --template proto/buf.gen.yaml proto",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "tsc:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.7.0",
+    "@connectrpc/connect-node": "^1.7.0"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "^1.61.0",
+    "@types/node": "^25.2.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.9.3"
+  }
+}

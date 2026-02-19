@@ -1,11 +1,16 @@
 .DS_Store
 .env
-.enum_manifest.json
 .pnpm-debug.log
-/node_modules/
+node_modules/
 coverage/
 dist/
-source_strings.json
+*.tsbuildinfo
+
+# UI
+ui/.enum_manifest.json
+ui/source_strings.json
 ui/src/translations
-ui/tsconfig.tsbuildinfo
-vite.config.ts.timestamp-*
+ui/vite.config.ts.timestamp-*
+
+# Server
+server/src/gen
