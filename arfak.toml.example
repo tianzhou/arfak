@@ -27,3 +27,18 @@ color = "#7c3aed"
 # vendor = "google"
 # model = "gemini-1.5-pro"
 # api_key = "AIza..."
+#
+# [[agents]]
+# id = "assistant"
+# name = "Assistant"
+# model = "claude"          # references a [[models]] id
+#
+# [[agents]]
+# id = "coder"
+# name = "Coder"
+# model = "gpt4"
+#
+# [[agents]]
+# id = "reviewer"
+# name = "Reviewer"
+# model = "gemini"

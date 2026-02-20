@@ -20,6 +20,12 @@ interface ModelConfig {
   api_key: string;
 }
 
+interface AgentConfig {
+  id: string;
+  name: string;
+  model: string;
+}
+
 interface ArfakConfig {
   general?: {
     logging?: {
@@ -33,6 +39,7 @@ interface ArfakConfig {
     };
   };
   models?: ModelConfig[];
+  agents?: AgentConfig[];
 }
 
 function loadConfig(): ArfakConfig {
