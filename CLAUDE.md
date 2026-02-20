@@ -58,9 +58,16 @@ pnpm --filter @arfak/server tsc:check # TypeScript type checking
 - `server/src/lib/` — Shared server utilities
 - `server/src/services/` — ConnectRPC service handlers
 
-## Configuration (`arfak.toml`)
+## Profile Directory
 
-Loaded at startup from `arfak.toml` inside the profile directory (override with `ARFAK_PROFILE` env var pointing to a directory; defaults to `cwd()`). Hot-reloaded on file changes; invalid configs are rejected and the previous config is kept.
+Controlled by `ARFAK_PROFILE` env var (dev default: `$PWD/.arfak`, prod default: `~/.arfak`). Contains two parallel subdirectories:
+
+- `workspace/` — git-tracked authored content (agents, config)
+- `state/` — runtime data, never committed (sessions, credentials)
+
+### Configuration (`arfak.toml`)
+
+Loaded at startup from `arfak.toml` at the profile root (not inside `workspace/` — contains sensitive API keys). Hot-reloaded on file changes; invalid configs are rejected and the previous config is kept.
 
 - `[general.logging]` — log level and file path
 - `[general.banner]` — optional UI banner with text, link, and color
@@ -69,7 +76,7 @@ Loaded at startup from `arfak.toml` inside the profile directory (override with 
 
 When adding new config fields, add corresponding validation in `validateConfig()` in `server/src/services/config.ts`. Validation runs at startup (fatal) and on hot-reload (aborts reload, keeps old config).
 
-See `arfak.toml.example` for a full annotated reference.
+See `.arfak/arfak.toml.example` for a full annotated reference.
 
 ## Logging
 

@@ -15,8 +15,9 @@ ui/vite.config.ts.timestamp-*
 # Server
 server/src/gen
 
-# Config
-arfak.toml
+# Profile
+.arfak/*
+!.arfak/arfak.toml.example
 
 # Plans
 plans/
