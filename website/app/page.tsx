@@ -1,41 +1,6 @@
 import { Navbar } from "./components/navbar";
-import { MacWindow } from "./components/mac-window";
 import { Footer } from "./components/footer";
-
-function Hero() {
-  return (
-    <section className="mx-auto max-w-3xl px-6 py-16 md:py-24">
-      <MacWindow title="Welcome to Arfak">
-        <div className="px-8 py-10 text-center">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Open-Source Personal AI Assistant for You
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-base leading-7">
-            Arfak is a private, extensible AI assistant you can run anywhere.
-            Built in the open, designed to work for you — not the other way
-            around.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href="#"
-              className="border-[3px] border-accent bg-accent px-6 py-2.5 text-base font-bold text-white shadow-[3px_3px_0_0_var(--foreground)] hover:bg-background hover:text-accent"
-            >
-              Get Started
-            </a>
-            <a
-              href="https://github.com/tianzhou/arfak"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-2 border-foreground px-6 py-2.5 text-base font-medium hover:bg-foreground hover:text-background"
-            >
-              GitHub
-            </a>
-          </div>
-        </div>
-      </MacWindow>
-    </section>
-  );
-}
+import { HeroSection } from "./components/hero-section";
 
 const features = [
   {
@@ -132,7 +97,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <Hero />
+      <HeroSection />
       <Features />
       <Footer />
     </div>
