@@ -1,4 +1,4 @@
-import { MessageCircleIcon } from 'lucide-react';
+import { BoxIcon, MessageCircleIcon } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import {
   Sidebar,
@@ -9,6 +9,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar.js';
+
+const NAV_ITEMS = [
+  { icon: MessageCircleIcon, label: 'Chat', path: '/' },
+  { icon: BoxIcon, label: 'Models', path: '/models' },
+];
 
 export default function AppSidebar({ hasBanner }: { hasBanner?: boolean }) {
   const location = useLocation();
@@ -21,16 +26,18 @@ export default function AppSidebar({ hasBanner }: { hasBanner?: boolean }) {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={location.pathname === '/'}
-                  render={<Link to="/" />}
-                  tooltip="Chat"
-                >
-                  <MessageCircleIcon />
-                  <span>Chat</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {NAV_ITEMS.map(({ icon: Icon, label, path }) => (
+                <SidebarMenuItem key={path}>
+                  <SidebarMenuButton
+                    isActive={location.pathname === path}
+                    render={<Link to={path} />}
+                    tooltip={label}
+                  >
+                    <Icon />
+                    <span>{label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

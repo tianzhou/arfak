@@ -3,14 +3,18 @@ import path from 'node:path';
 import { connectNodeAdapter } from '@connectrpc/connect-node';
 import { createSubsystemLogger } from './logging/index.js';
 import routes from './routes.js';
-import { createStaticHandler } from './static.js';
+import { createDevProxy, createStaticHandler } from './static.js';
 
 const log = createSubsystemLogger('server');
 
 const connectHandler = connectNodeAdapter({ routes });
 
-const uiDist = path.join(import.meta.dirname, '../../ui/dist');
-const staticHandler = createStaticHandler(uiDist);
+const isDev = process.env.NODE_ENV !== 'production';
+const vitePort = parseInt(process.env.VITE_PORT ?? '5173', 10);
+const devProxy = isDev ? createDevProxy(vitePort) : null;
+const staticHandler = isDev
+  ? null
+  : createStaticHandler(path.join(import.meta.dirname, '../../ui/dist'));
 
 const server = http.createServer((req, res) => {
   if (req.method === 'POST') {
@@ -18,8 +22,12 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  staticHandler(req, res);
+  (devProxy?.handler ?? staticHandler!)(req, res);
 });
+
+if (devProxy) {
+  server.on('upgrade', devProxy.handleUpgrade);
+}
 
 const port = parseInt(process.env.PORT ?? '3000', 10);
 server.on('error', (err: NodeJS.ErrnoException) => {

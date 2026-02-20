@@ -1,5 +1,7 @@
 import fs from 'node:fs';
+import http from 'node:http';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import net from 'node:net';
 import path from 'node:path';
 
 const MIME_TYPES: Record<string, string> = {
@@ -13,6 +15,48 @@ const MIME_TYPES: Record<string, string> = {
   '.woff': 'font/woff',
   '.woff2': 'font/woff2',
 };
+
+export function createDevProxy(vitePort: number) {
+  const handler = (req: IncomingMessage, res: ServerResponse) => {
+    const proxy = http.request(
+      {
+        headers: { ...req.headers, host: `localhost:${vitePort}` },
+        hostname: 'localhost',
+        method: req.method,
+        path: req.url,
+        port: vitePort,
+      },
+      (proxyRes) => {
+        res.writeHead(proxyRes.statusCode ?? 200, proxyRes.headers);
+        proxyRes.pipe(res);
+      },
+    );
+    proxy.on('error', () => {
+      res.writeHead(502);
+      res.end(`Vite dev server not available on port ${vitePort}`);
+    });
+    req.pipe(proxy);
+  };
+
+  // Proxy WebSocket upgrade requests for Vite HMR
+  const handleUpgrade = (req: IncomingMessage, socket: net.Socket, head: Buffer) => {
+    const upstream = net.connect(vitePort, 'localhost');
+    upstream.on('connect', () => {
+      const headers = [`${req.method} ${req.url} HTTP/1.1`];
+      for (const [key, value] of Object.entries(req.headers)) {
+        headers.push(`${key}: ${Array.isArray(value) ? value.join(', ') : value}`);
+      }
+      upstream.write(headers.join('\r\n') + '\r\n\r\n');
+      if (head.length) upstream.write(head);
+      upstream.pipe(socket);
+      socket.pipe(upstream);
+    });
+    upstream.on('error', () => socket.destroy());
+    socket.on('error', () => upstream.destroy());
+  };
+
+  return { handleUpgrade, handler };
+}
 
 export function createStaticHandler(root: string) {
   const indexHtml = path.join(root, 'index.html');

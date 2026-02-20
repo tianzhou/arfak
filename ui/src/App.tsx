@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
 import type { Mode } from './hooks/use-theme.js';
 import ChatPage from './chat/ChatPage.js';
+import ModelsPage from './models/ModelsPage.js';
 import AppSidebar from './components/AppSidebar.js';
 import { Button } from './components/ui/button.js';
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from './components/ui/menu.js';
@@ -135,6 +136,7 @@ export default function App() {
           <SidebarInset>
             <Routes>
               <Route element={<ChatPage />} path="/" />
+              <Route element={<ModelsPage />} path="/models" />
             </Routes>
           </SidebarInset>
         </SidebarProvider>
