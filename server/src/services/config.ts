@@ -12,7 +12,7 @@ const log = createSubsystemLogger('config');
 
 const configPath = process.env.ARFAK_CONFIG ?? 'arfak.toml';
 
-export interface ModelConfig {
+interface ModelConfig {
   id: string;
   name: string;
   vendor: string;
@@ -77,10 +77,6 @@ log.info(
     : `No config file found at ${configPath}`,
 );
 
-export function getModels(): ModelConfig[] {
-  return config.models ?? [];
-}
-
 export const configHandlers = {
   async getConfig() {
     const banner = config.general?.banner;
@@ -95,6 +91,17 @@ export const configHandlers = {
         link: banner.link ?? '',
         color: banner.color ?? '',
       },
+    };
+  },
+
+  async listModels() {
+    return {
+      models: (config.models ?? []).map(({ id, name, vendor, model }) => ({
+        id,
+        name,
+        vendor,
+        model,
+      })),
     };
   },
 };
