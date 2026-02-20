@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { GetConfigRequest, GetConfigResponse, PingRequest, PingResponse } from "./service_pb.js";
+import { GetConfigRequest, GetConfigResponse, ListModelsRequest, ListModelsResponse, PingRequest, PingResponse } from "./service_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -28,6 +28,15 @@ export const ArfakService = {
       name: "GetConfig",
       I: GetConfigRequest,
       O: GetConfigResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc arfak.v1.ArfakService.ListModels
+     */
+    listModels: {
+      name: "ListModels",
+      I: ListModelsRequest,
+      O: ListModelsResponse,
       kind: MethodKind.Unary,
     },
   }

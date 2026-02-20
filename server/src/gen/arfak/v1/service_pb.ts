@@ -191,3 +191,126 @@ export class BannerConfig extends Message<BannerConfig> {
   }
 }
 
+/**
+ * @generated from message arfak.v1.ListModelsRequest
+ */
+export class ListModelsRequest extends Message<ListModelsRequest> {
+  constructor(data?: PartialMessage<ListModelsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "arfak.v1.ListModelsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListModelsRequest {
+    return new ListModelsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListModelsRequest {
+    return new ListModelsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListModelsRequest {
+    return new ListModelsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListModelsRequest | PlainMessage<ListModelsRequest> | undefined, b: ListModelsRequest | PlainMessage<ListModelsRequest> | undefined): boolean {
+    return proto3.util.equals(ListModelsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.ListModelsResponse
+ */
+export class ListModelsResponse extends Message<ListModelsResponse> {
+  /**
+   * @generated from field: repeated arfak.v1.Model models = 1;
+   */
+  models: Model[] = [];
+
+  constructor(data?: PartialMessage<ListModelsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "arfak.v1.ListModelsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "models", kind: "message", T: Model, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListModelsResponse {
+    return new ListModelsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListModelsResponse {
+    return new ListModelsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListModelsResponse {
+    return new ListModelsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListModelsResponse | PlainMessage<ListModelsResponse> | undefined, b: ListModelsResponse | PlainMessage<ListModelsResponse> | undefined): boolean {
+    return proto3.util.equals(ListModelsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.Model
+ */
+export class Model extends Message<Model> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name = "";
+
+  /**
+   * @generated from field: string vendor = 3;
+   */
+  vendor = "";
+
+  /**
+   * @generated from field: string model = 4;
+   */
+  model = "";
+
+  constructor(data?: PartialMessage<Model>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "arfak.v1.Model";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "vendor", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "model", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Model {
+    return new Model().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Model {
+    return new Model().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Model {
+    return new Model().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Model | PlainMessage<Model> | undefined, b: Model | PlainMessage<Model> | undefined): boolean {
+    return proto3.util.equals(Model, a, b);
+  }
+}
+

@@ -6,3 +6,24 @@
 text = "System maintenance scheduled for Sunday 2am UTC"
 link = "https://status.example.com"
 color = "#7c3aed"
+
+# [[models]]
+# id = "gpt4"
+# name = "GPT-4o"
+# vendor = "openai"            # openai | anthropic | google
+# model = "gpt-4o"
+# api_key = "sk-..."
+#
+# [[models]]
+# id = "claude"
+# name = "Claude Sonnet"
+# vendor = "anthropic"
+# model = "claude-sonnet-4-20250514"
+# api_key = "sk-ant-..."
+#
+# [[models]]
+# id = "gemini"
+# name = "Gemini Pro"
+# vendor = "google"
+# model = "gemini-1.5-pro"
+# api_key = "AIza..."

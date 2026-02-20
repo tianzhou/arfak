@@ -5,6 +5,7 @@ package arfak.v1;
 service ArfakService {
   rpc Ping(PingRequest) returns (PingResponse);
   rpc GetConfig(GetConfigRequest) returns (GetConfigResponse);
+  rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
 }
 
 message PingRequest {}
@@ -23,4 +24,17 @@ message BannerConfig {
   string text = 1;
   string link = 2;
   string color = 3;
+}
+
+message ListModelsRequest {}
+
+message ListModelsResponse {
+  repeated Model models = 1;
+}
+
+message Model {
+  string id = 1;
+  string name = 2;
+  string vendor = 3;
+  string model = 4;
 }
