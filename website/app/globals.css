@@ -65,10 +65,6 @@ pre code {
 
 .wing-l { transform-box: fill-box; transform-origin: 100% 100%; animation: flap-left 0.8s ease-in-out infinite paused; }
 .wing-r { transform-box: fill-box; transform-origin: 0% 100%; animation: flap-right 0.8s ease-in-out infinite paused; }
-.bird:nth-child(2) > * { animation-duration: 0.7s; animation-delay: 0.1s; }
-.bird:nth-child(3) > * { animation-duration: 0.9s; animation-delay: 0.2s; }
-.bird:nth-child(4) > * { animation-duration: 0.65s; animation-delay: 0.15s; }
-.bird:nth-child(5) > * { animation-duration: 0.75s; animation-delay: 0.05s; }
 
 .birds-active .wing-l,
 .birds-active .wing-r { animation-play-state: running; }

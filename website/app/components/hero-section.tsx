@@ -1,29 +1,32 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { DitheredLandscape } from "./dithered-landscape";
 import { MacWindow } from "./mac-window";
 
 export function HeroSection() {
-  const wrapperRef = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const [flapping, setFlapping] = useState(false);
 
-  const onMouseMove = () => {
-    wrapperRef.current?.classList.add("birds-active");
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    setFlapping(true);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      wrapperRef.current?.classList.remove("birds-active");
-    }, 500);
+      setFlapping(false);
+    }, 300);
   };
 
   const onMouseLeave = () => {
     clearTimeout(timer.current);
-    wrapperRef.current?.classList.remove("birds-active");
+    setPos(null);
+    setFlapping(false);
   };
 
   return (
     <div
-      ref={wrapperRef}
       className="relative overflow-hidden"
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
@@ -59,6 +62,30 @@ export function HeroSection() {
           </div>
         </MacWindow>
       </section>
+
+      {pos && (
+        <svg
+          className="pointer-events-none absolute top-0 left-0 z-20"
+          width="40"
+          height="30"
+          style={{
+            transform: `translate(${pos.x - 20}px, ${pos.y - 25}px)`,
+            transition: "transform 0.15s ease-out",
+          }}
+          aria-hidden="true"
+        >
+          <g
+            className={flapping ? "birds-active" : ""}
+            stroke="var(--foreground)"
+            fill="none"
+            strokeWidth="2"
+            opacity="0.5"
+          >
+            <line className="wing-l" x1="20" y1="20" x2="8" y2="8" />
+            <line className="wing-r" x1="20" y1="20" x2="32" y2="8" />
+          </g>
+        </svg>
+      )}
     </div>
   );
 }
