@@ -1,0 +1,215 @@
+---
+title: "How OpenClaw Works #2 — Heartbeat Runner"
+date: "2026-02-20"
+description: "How OpenClaw turns a periodic timer into proactive behavior with timezone-aware scheduling, event classification, and duplicate suppression."
+featured: false
+category: "Engineering"
+---
+
+Post #2 in **How OpenClaw Works** — a series studying patterns from the [OpenClaw](https://github.com/openclaw/openclaw) codebase, an open-source personal AI assistant.
+
+Source: [`heartbeat-runner.ts`](https://github.com/openclaw/openclaw/blob/8f80e2a46759d21b4567a8bc291a85cffd2ef9fe/src/infra/heartbeat-runner.ts)
+
+**Key dependencies:**
+
+- [`heartbeat-active-hours.ts`](https://github.com/openclaw/openclaw/blob/8f80e2a46759d21b4567a8bc291a85cffd2ef9fe/src/infra/heartbeat-active-hours.ts) — Timezone-aware window checks. Using `Intl.DateTimeFormat` to resolve the current time in arbitrary timezones avoids pulling in a date library.
+- [`heartbeat-events-filter.ts`](https://github.com/openclaw/openclaw/blob/8f80e2a46759d21b4567a8bc291a85cffd2ef9fe/src/infra/heartbeat-events-filter.ts) — Separates real cron content from heartbeat infrastructure noise so only meaningful events reach the model.
+
+## The Problem
+
+Most AI assistants sit idle until you message them. OpenClaw flips this — it checks in periodically, relays cron reminders, and reports when background commands finish. But a naive `setInterval` creates problems fast: notifications at 3 AM, duplicate messages, bloated conversation context from no-op check-ins.
+
+The heartbeat runner turns a single `every: "30m"` config line into a system that knows _when_ to wake, _what_ to say, and _when to stay quiet_.
+
+## The Pipeline
+
+```
+Timer tick / wake event
+  → Resolve which agents get heartbeats
+    → Active hours check (timezone-aware)
+      → Classify trigger (poll, cron, exec, wake)
+        → Build prompt
+          → Call LLM
+            → Filter response (empty? duplicate?)
+              → Deliver outbound or prune transcript
+```
+
+## Agent Selection
+
+In a multi-agent setup, you don't want every agent running heartbeats independently. The runner uses an opt-in model:
+
+```typescript
+function resolveHeartbeatAgents(cfg: OpenClawConfig): string[] {
+  const agents = cfg.agents?.list ?? [];
+  const explicit = agents.filter((a) => a.heartbeat?.every);
+  if (explicit.length > 0) {
+    return explicit.map((a) => a.id);
+  }
+  // No agent explicitly opts in → default agent only
+  return [cfg.agents?.defaults?.id ?? "default"];
+}
+```
+
+If _any_ agent defines heartbeat config, _only_ those agents run heartbeats. Otherwise, the default agent runs alone. This prevents runaway heartbeat proliferation — adding a new agent for a side task won't silently double your notification volume.
+
+## Active Hours
+
+Sending a "just checking in" message at 2 AM is worse than not sending it. The active hours system gates heartbeats behind a timezone-aware time window.
+
+```typescript
+export function isWithinActiveHours(
+  cfg: OpenClawConfig,
+  heartbeat?: HeartbeatConfig,
+  nowMs?: number,
+): boolean {
+  const active = heartbeat?.activeHours;
+  if (!active) return true;
+
+  const startMin = parseActiveHoursTime({ allow24: false }, active.start);
+  const endMin = parseActiveHoursTime({ allow24: true }, active.end);
+  if (startMin === null || endMin === null) return true;
+  if (startMin === endMin) return false;
+
+  const timeZone = resolveActiveHoursTimezone(cfg, active.timezone);
+  const currentMin = resolveMinutesInTimeZone(nowMs ?? Date.now(), timeZone);
+  if (currentMin === null) return true;
+
+  // Wraparound: 22:00–06:00 spans midnight
+  if (endMin > startMin) {
+    return currentMin >= startMin && currentMin < endMin;
+  }
+  return currentMin >= startMin || currentMin < endMin;
+}
+```
+
+Three design choices stand out:
+
+**Graceful degradation** — missing config, unparseable times, or failed timezone resolution all return `true`. Better to send an off-hours message than silently swallow a cron reminder because the timezone string had a typo.
+
+**Minutes-since-midnight** — converting `"08:00"` to `480` and `"22:00"` to `1320` makes the range check a simple integer comparison. The `allow24` flag lets `"24:00"` represent end-of-day without special-casing.
+
+**Timezone resolution** uses `Intl.DateTimeFormat` instead of a date library:
+
+```typescript
+function resolveActiveHoursTimezone(cfg: OpenClawConfig, raw?: string): string {
+  const trimmed = raw?.trim();
+  if (!trimmed || trimmed === "user") {
+    return resolveUserTimezone(cfg.agents?.defaults?.userTimezone);
+  }
+  if (trimmed === "local") {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  }
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: trimmed }).format(new Date());
+    return trimmed;
+  } catch {
+    return resolveUserTimezone(cfg.agents?.defaults?.userTimezone);
+  }
+}
+```
+
+`"user"` maps to the user's configured timezone. `"local"` reads the host machine's timezone. Anything else gets validated by trying to format a date with it — if `Intl` throws, it falls back to the user timezone rather than crashing the scheduler.
+
+## Event Filtering
+
+Not all system events are worth relaying. The events filter separates signal from noise:
+
+```typescript
+export function isCronSystemEvent(evt: string) {
+  if (!evt.trim()) return false;
+  return !isHeartbeatNoiseEvent(evt) && !isExecCompletionEvent(evt);
+}
+
+function isHeartbeatNoiseEvent(evt: string): boolean {
+  const lower = evt.trim().toLowerCase();
+  if (!lower) return false;
+  return (
+    isHeartbeatAckEvent(lower) ||
+    lower.includes("heartbeat poll") ||
+    lower.includes("heartbeat wake")
+  );
+}
+```
+
+`HEARTBEAT_OK` ack tokens, `"heartbeat poll"` messages, and `"heartbeat wake"` strings are infrastructure noise. Exec completion events get their own prompt path. Everything else is real cron content.
+
+When real cron events exist, `buildCronEventPrompt` embeds them directly:
+
+```typescript
+export function buildCronEventPrompt(pendingEvents: string[]): string {
+  const eventText = pendingEvents.join("\n").trim();
+  if (!eventText) {
+    return "A scheduled cron event was triggered, but no event content was found. Reply HEARTBEAT_OK.";
+  }
+  return (
+    "A scheduled reminder has been triggered. The reminder content is:\n\n" +
+    eventText +
+    "\n\nPlease relay this reminder to the user in a helpful and friendly way."
+  );
+}
+```
+
+The prompt includes the event text directly instead of saying "check the system messages above." This matters because the model's context window may not include the original system event after transcript pruning.
+
+## Duplicate Suppression
+
+The runner tracks what it last sent and when:
+
+```typescript
+if (lastHeartbeatText === normalizedText &&
+    lastHeartbeatSentAt &&
+    Date.now() - lastHeartbeatSentAt < 24 * 60 * 60 * 1000) {
+  // Same text within 24 hours — skip delivery
+  return;
+}
+```
+
+If the model produces the same reply twice within 24 hours, it gets dropped. This catches a common failure mode: the model generating the same "good morning" check-in because nothing has changed since the last heartbeat.
+
+## Transcript Pruning
+
+Every heartbeat adds messages to the session transcript — the prompt, the model's reply, tool calls. For no-op heartbeats (where the model replies `HEARTBEAT_OK`), this is pure bloat.
+
+```typescript
+function pruneHeartbeatTranscript(session, preHeartbeatSize) {
+  // After HEARTBEAT_OK, truncate back to pre-heartbeat state
+  session.transcript.length = preHeartbeatSize;
+}
+```
+
+Before calling the model, the runner snapshots the transcript length. If the reply is effectively empty (a `HEARTBEAT_OK` or variant), it rolls the transcript back. No-op heartbeats leave no trace in the conversation context.
+
+This is critical for long-running sessions. A 30-minute heartbeat interval means 48 heartbeat cycles per day. Without pruning, the transcript fills with "anything to report?" / "nope" exchanges that crowd out real conversation.
+
+## The Scheduler
+
+The runner doesn't use `setInterval`. It maintains per-agent state and schedules the _next due_ heartbeat with `setTimeout`:
+
+```typescript
+const agentStates = new Map<string, HeartbeatAgentState>();
+
+function scheduleNext() {
+  let earliestDue = Infinity;
+  for (const [agentId, state] of agentStates) {
+    if (state.nextDueMs < earliestDue) {
+      earliestDue = state.nextDueMs;
+    }
+  }
+  const delay = Math.max(0, earliestDue - Date.now());
+  setTimeout(tick, delay);
+}
+```
+
+Each agent tracks its own `nextDueMs`. The scheduler picks the earliest and sets a single timer. When a wake event arrives (exec completion, cron trigger), it can target a specific agent by ID or session key, advancing that agent's due time to now.
+
+Config hot-reload (covered in [Post #1](/blog/how-openclaw-works-config-hot-reload)) feeds into this via `updateConfig` — new intervals, changed active hours, or added agents take effect on the next tick without restarting the scheduler.
+
+## Takeaways
+
+1. **Opt-in beats opt-out for multi-agent systems** — requiring explicit heartbeat config prevents silent notification proliferation when new agents are added
+2. **Degrade toward action, not silence** — when timezone config is broken, sending an off-hours message is better than silently dropping a cron reminder
+3. **Prune no-op cycles from context** — periodic systems generate repetitive noise; rolling back empty heartbeats keeps the conversation transcript useful
+4. **Embed data in prompts, don't reference it** — `buildCronEventPrompt` puts the event text in the prompt directly because context may have been pruned since the event was logged
+5. **Single-timer scheduling over setInterval** — one `setTimeout` for the next due event handles per-agent intervals, wake events, and config changes without timer management
+
+Next in the series: how OpenClaw routes outbound messages across WhatsApp, Telegram, and Slack with a unified channel abstraction.
