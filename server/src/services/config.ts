@@ -1,5 +1,5 @@
-import fs from 'node:fs';
 import { watch } from 'chokidar';
+import fs from 'node:fs';
 import { parse } from 'smol-toml';
 import {
   createSubsystemLogger,

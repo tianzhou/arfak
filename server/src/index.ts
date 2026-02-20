@@ -1,6 +1,6 @@
+import { connectNodeAdapter } from '@connectrpc/connect-node';
 import http from 'node:http';
 import path from 'node:path';
-import { connectNodeAdapter } from '@connectrpc/connect-node';
 import { createSubsystemLogger } from './logging/index.js';
 import routes from './routes.js';
 import { createDevProxy, createStaticHandler } from './static.js';
@@ -32,7 +32,9 @@ if (devProxy) {
 const port = parseInt(process.env.PORT ?? '3000', 10);
 server.on('error', (err: NodeJS.ErrnoException) => {
   if (err.code === 'EADDRINUSE') {
-    log.fatal(`Port ${port} is already in use. Stop the other process or set PORT=<port> to use a different port.`);
+    log.fatal(
+      `Port ${port} is already in use. Stop the other process or set PORT=<port> to use a different port.`,
+    );
     process.exit(1);
   }
   throw err;

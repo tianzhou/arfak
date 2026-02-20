@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "build": "tsc",
     "dev": "tsx watch src/index.ts",
     "gen": "buf generate --template proto/buf.gen.yaml proto",
-    "build": "tsc",
     "start": "node dist/index.js",
     "tsc:check": "tsc --noEmit"
   },

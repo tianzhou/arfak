@@ -1,11 +1,4 @@
-export type LogLevel =
-  | 'silent'
-  | 'fatal'
-  | 'error'
-  | 'warn'
-  | 'info'
-  | 'debug'
-  | 'trace';
+export type LogLevel = 'silent' | 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
 
 const LOG_LEVEL_VALUES: Record<LogLevel, number> = {
   silent: Number.POSITIVE_INFINITY,
@@ -26,9 +19,6 @@ export function normalizeLogLevel(level: string | undefined): LogLevel {
   return 'info';
 }
 
-export function isLevelEnabled(
-  currentLevel: LogLevel,
-  targetLevel: LogLevel,
-): boolean {
+export function isLevelEnabled(currentLevel: LogLevel, targetLevel: LogLevel): boolean {
   return LOG_LEVEL_VALUES[targetLevel] <= LOG_LEVEL_VALUES[currentLevel];
 }

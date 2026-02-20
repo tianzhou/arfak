@@ -1,6 +1,6 @@
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import fs from 'node:fs';
 import http from 'node:http';
-import type { IncomingMessage, ServerResponse } from 'node:http';
 import net from 'node:net';
 import path from 'node:path';
 

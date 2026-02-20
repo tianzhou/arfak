@@ -3,8 +3,15 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
-import { Message, proto3 } from "@bufbuild/protobuf";
+import type {
+  BinaryReadOptions,
+  FieldList,
+  JsonReadOptions,
+  JsonValue,
+  PartialMessage,
+  PlainMessage,
+} from '@bufbuild/protobuf';
+import { Message, proto3 } from '@bufbuild/protobuf';
 
 /**
  * @generated from message arfak.v1.PingRequest
@@ -16,9 +23,8 @@ export class PingRequest extends Message<PingRequest> {
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "arfak.v1.PingRequest";
-  static readonly fields: FieldList = proto3.util.newFieldList(() => [
-  ]);
+  static readonly typeName = 'arfak.v1.PingRequest';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => []);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): PingRequest {
     return new PingRequest().fromBinary(bytes, options);
@@ -32,7 +38,10 @@ export class PingRequest extends Message<PingRequest> {
     return new PingRequest().fromJsonString(jsonString, options);
   }
 
-  static equals(a: PingRequest | PlainMessage<PingRequest> | undefined, b: PingRequest | PlainMessage<PingRequest> | undefined): boolean {
+  static equals(
+    a: PingRequest | PlainMessage<PingRequest> | undefined,
+    b: PingRequest | PlainMessage<PingRequest> | undefined,
+  ): boolean {
     return proto3.util.equals(PingRequest, a, b);
   }
 }
@@ -44,7 +53,7 @@ export class PingResponse extends Message<PingResponse> {
   /**
    * @generated from field: string pong = 1;
    */
-  pong = "";
+  pong = '';
 
   constructor(data?: PartialMessage<PingResponse>) {
     super();
@@ -52,9 +61,9 @@ export class PingResponse extends Message<PingResponse> {
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "arfak.v1.PingResponse";
+  static readonly typeName = 'arfak.v1.PingResponse';
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "pong", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: 'pong', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): PingResponse {
@@ -69,7 +78,10 @@ export class PingResponse extends Message<PingResponse> {
     return new PingResponse().fromJsonString(jsonString, options);
   }
 
-  static equals(a: PingResponse | PlainMessage<PingResponse> | undefined, b: PingResponse | PlainMessage<PingResponse> | undefined): boolean {
+  static equals(
+    a: PingResponse | PlainMessage<PingResponse> | undefined,
+    b: PingResponse | PlainMessage<PingResponse> | undefined,
+  ): boolean {
     return proto3.util.equals(PingResponse, a, b);
   }
 }
@@ -84,9 +96,8 @@ export class GetConfigRequest extends Message<GetConfigRequest> {
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "arfak.v1.GetConfigRequest";
-  static readonly fields: FieldList = proto3.util.newFieldList(() => [
-  ]);
+  static readonly typeName = 'arfak.v1.GetConfigRequest';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => []);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetConfigRequest {
     return new GetConfigRequest().fromBinary(bytes, options);
@@ -100,7 +111,10 @@ export class GetConfigRequest extends Message<GetConfigRequest> {
     return new GetConfigRequest().fromJsonString(jsonString, options);
   }
 
-  static equals(a: GetConfigRequest | PlainMessage<GetConfigRequest> | undefined, b: GetConfigRequest | PlainMessage<GetConfigRequest> | undefined): boolean {
+  static equals(
+    a: GetConfigRequest | PlainMessage<GetConfigRequest> | undefined,
+    b: GetConfigRequest | PlainMessage<GetConfigRequest> | undefined,
+  ): boolean {
     return proto3.util.equals(GetConfigRequest, a, b);
   }
 }
@@ -120,9 +134,9 @@ export class GetConfigResponse extends Message<GetConfigResponse> {
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "arfak.v1.GetConfigResponse";
+  static readonly typeName = 'arfak.v1.GetConfigResponse';
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "banner", kind: "message", T: BannerConfig },
+    { no: 1, name: 'banner', kind: 'message', T: BannerConfig },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetConfigResponse {
@@ -137,7 +151,10 @@ export class GetConfigResponse extends Message<GetConfigResponse> {
     return new GetConfigResponse().fromJsonString(jsonString, options);
   }
 
-  static equals(a: GetConfigResponse | PlainMessage<GetConfigResponse> | undefined, b: GetConfigResponse | PlainMessage<GetConfigResponse> | undefined): boolean {
+  static equals(
+    a: GetConfigResponse | PlainMessage<GetConfigResponse> | undefined,
+    b: GetConfigResponse | PlainMessage<GetConfigResponse> | undefined,
+  ): boolean {
     return proto3.util.equals(GetConfigResponse, a, b);
   }
 }
@@ -149,17 +166,17 @@ export class BannerConfig extends Message<BannerConfig> {
   /**
    * @generated from field: string text = 1;
    */
-  text = "";
+  text = '';
 
   /**
    * @generated from field: string link = 2;
    */
-  link = "";
+  link = '';
 
   /**
    * @generated from field: string color = 3;
    */
-  color = "";
+  color = '';
 
   constructor(data?: PartialMessage<BannerConfig>) {
     super();
@@ -167,11 +184,11 @@ export class BannerConfig extends Message<BannerConfig> {
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "arfak.v1.BannerConfig";
+  static readonly typeName = 'arfak.v1.BannerConfig';
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "link", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "color", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: 'text', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'link', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: 'color', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): BannerConfig {
@@ -186,7 +203,10 @@ export class BannerConfig extends Message<BannerConfig> {
     return new BannerConfig().fromJsonString(jsonString, options);
   }
 
-  static equals(a: BannerConfig | PlainMessage<BannerConfig> | undefined, b: BannerConfig | PlainMessage<BannerConfig> | undefined): boolean {
+  static equals(
+    a: BannerConfig | PlainMessage<BannerConfig> | undefined,
+    b: BannerConfig | PlainMessage<BannerConfig> | undefined,
+  ): boolean {
     return proto3.util.equals(BannerConfig, a, b);
   }
 }
@@ -201,9 +221,8 @@ export class ListModelsRequest extends Message<ListModelsRequest> {
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "arfak.v1.ListModelsRequest";
-  static readonly fields: FieldList = proto3.util.newFieldList(() => [
-  ]);
+  static readonly typeName = 'arfak.v1.ListModelsRequest';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => []);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListModelsRequest {
     return new ListModelsRequest().fromBinary(bytes, options);
@@ -217,7 +236,10 @@ export class ListModelsRequest extends Message<ListModelsRequest> {
     return new ListModelsRequest().fromJsonString(jsonString, options);
   }
 
-  static equals(a: ListModelsRequest | PlainMessage<ListModelsRequest> | undefined, b: ListModelsRequest | PlainMessage<ListModelsRequest> | undefined): boolean {
+  static equals(
+    a: ListModelsRequest | PlainMessage<ListModelsRequest> | undefined,
+    b: ListModelsRequest | PlainMessage<ListModelsRequest> | undefined,
+  ): boolean {
     return proto3.util.equals(ListModelsRequest, a, b);
   }
 }
@@ -237,9 +259,9 @@ export class ListModelsResponse extends Message<ListModelsResponse> {
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "arfak.v1.ListModelsResponse";
+  static readonly typeName = 'arfak.v1.ListModelsResponse';
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "models", kind: "message", T: Model, repeated: true },
+    { no: 1, name: 'models', kind: 'message', T: Model, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListModelsResponse {
@@ -250,11 +272,17 @@ export class ListModelsResponse extends Message<ListModelsResponse> {
     return new ListModelsResponse().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListModelsResponse {
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): ListModelsResponse {
     return new ListModelsResponse().fromJsonString(jsonString, options);
   }
 
-  static equals(a: ListModelsResponse | PlainMessage<ListModelsResponse> | undefined, b: ListModelsResponse | PlainMessage<ListModelsResponse> | undefined): boolean {
+  static equals(
+    a: ListModelsResponse | PlainMessage<ListModelsResponse> | undefined,
+    b: ListModelsResponse | PlainMessage<ListModelsResponse> | undefined,
+  ): boolean {
     return proto3.util.equals(ListModelsResponse, a, b);
   }
 }
@@ -266,22 +294,22 @@ export class Model extends Message<Model> {
   /**
    * @generated from field: string id = 1;
    */
-  id = "";
+  id = '';
 
   /**
    * @generated from field: string name = 2;
    */
-  name = "";
+  name = '';
 
   /**
    * @generated from field: string vendor = 3;
    */
-  vendor = "";
+  vendor = '';
 
   /**
    * @generated from field: string model = 4;
    */
-  model = "";
+  model = '';
 
   constructor(data?: PartialMessage<Model>) {
     super();
@@ -289,12 +317,12 @@ export class Model extends Message<Model> {
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = "arfak.v1.Model";
+  static readonly typeName = 'arfak.v1.Model';
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "vendor", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: "model", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: 'id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'name', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: 'vendor', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: 'model', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Model {
@@ -309,8 +337,10 @@ export class Model extends Message<Model> {
     return new Model().fromJsonString(jsonString, options);
   }
 
-  static equals(a: Model | PlainMessage<Model> | undefined, b: Model | PlainMessage<Model> | undefined): boolean {
+  static equals(
+    a: Model | PlainMessage<Model> | undefined,
+    b: Model | PlainMessage<Model> | undefined,
+  ): boolean {
     return proto3.util.equals(Model, a, b);
   }
 }
-

@@ -68,8 +68,7 @@ function formatConsoleMessage(
   message: string,
   meta?: Record<string, unknown>,
 ): string {
-  const metaStr =
-    meta && Object.keys(meta).length > 0 ? ' ' + JSON.stringify(meta) : '';
+  const metaStr = meta && Object.keys(meta).length > 0 ? ' ' + JSON.stringify(meta) : '';
 
   if (!useColor) {
     const timestamp = new Date().toISOString();
@@ -79,8 +78,7 @@ function formatConsoleMessage(
   const time = formatTime();
   const subsystemColor = getSubsystemColor(subsystem);
   const levelColor = LEVEL_COLORS[level] ?? '';
-  const coloredMeta =
-    metaStr.length > 0 ? ` ${RESET}\x1b[90m${metaStr.slice(1)}${RESET}` : '';
+  const coloredMeta = metaStr.length > 0 ? ` ${RESET}\x1b[90m${metaStr.slice(1)}${RESET}` : '';
 
   return `\x1b[90m${time}${RESET} ${levelColor}${level.toUpperCase().padEnd(5)}${RESET} ${subsystemColor}[${subsystem}]${RESET} ${message}${coloredMeta}`;
 }
@@ -148,11 +146,7 @@ export function setLogLevel(level: LogLevel): void {
 // ── Logger factory ──────────────────────────────────────────────────
 
 export function createSubsystemLogger(subsystem: string): SubsystemLogger {
-  function log(
-    level: LogLevel,
-    message: string,
-    meta?: Record<string, unknown>,
-  ): void {
+  function log(level: LogLevel, message: string, meta?: Record<string, unknown>): void {
     if (!isLevelEnabled(currentLevel, level)) return;
 
     logToFile(subsystem, level, message, meta);
