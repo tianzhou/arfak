@@ -1,6 +1,8 @@
 import { watch } from 'chokidar';
 import fs from 'node:fs';
+import path from 'node:path';
 import { parse } from 'smol-toml';
+import { getProfileDir } from '../lib/profile.js';
 import {
   createSubsystemLogger,
   normalizeLogLevel,
@@ -10,7 +12,7 @@ import {
 
 const log = createSubsystemLogger('config');
 
-const configPath = process.env.ARFAK_CONFIG ?? 'arfak.toml';
+const configPath = path.join(getProfileDir(), 'arfak.toml');
 
 interface ModelConfig {
   id: string;

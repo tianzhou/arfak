@@ -3,9 +3,9 @@
   "private": true,
   "scripts": {
     "build": "pnpm --filter @arfak/ui build && pnpm --filter @arfak/server build",
-    "dev": "ARFAK_CONFIG=$PWD/arfak.toml pnpm --parallel --filter @arfak/ui --filter @arfak/server dev",
+    "dev": "ARFAK_PROFILE=$PWD pnpm --parallel --filter @arfak/ui --filter @arfak/server dev",
     "preinstall": "command -v git >/dev/null 2>&1 && git config core.hooksPath git-hooks || exit 0",
-    "start": "ARFAK_CONFIG=$PWD/arfak.toml NODE_ENV=production node server/dist/index.js"
+    "start": "ARFAK_PROFILE=$PWD NODE_ENV=production node server/dist/index.js"
   },
   "devDependencies": {
     "oxfmt": "^0.32.0"
