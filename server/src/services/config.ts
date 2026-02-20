@@ -63,13 +63,59 @@ function applyLoggingConfig(cfg: ArfakConfig): void {
   }
 }
 
+function findDuplicates(ids: string[]): string[] {
+  const seen = new Set<string>();
+  const dupes = new Set<string>();
+  for (const id of ids) {
+    if (seen.has(id)) dupes.add(id);
+    else seen.add(id);
+  }
+  return [...dupes];
+}
+
+function validateConfig(cfg: ArfakConfig): string[] {
+  const errors: string[] = [];
+  const models = cfg.models ?? [];
+  const agents = cfg.agents ?? [];
+  const modelIds = models.map((m) => m.id);
+
+  for (const id of findDuplicates(modelIds)) {
+    errors.push(`Duplicate model id: "${id}"`);
+  }
+  for (const id of findDuplicates(agents.map((a) => a.id))) {
+    errors.push(`Duplicate agent id: "${id}"`);
+  }
+  for (const agent of agents) {
+    if (!modelIds.includes(agent.model)) {
+      errors.push(`Agent "${agent.id}" references unknown model id: "${agent.model}"`);
+    }
+  }
+
+  return errors;
+}
+
 let config = loadConfig();
 applyLoggingConfig(config);
+
+const startupErrors = validateConfig(config);
+if (startupErrors.length > 0) {
+  for (const error of startupErrors) log.error(error);
+  process.exit(1);
+}
 
 const watcher = watch(configPath, { ignoreInitial: true });
 
 watcher.on('all', (event) => {
-  config = loadConfig();
+  const newConfig = loadConfig();
+  const errors = validateConfig(newConfig);
+  if (errors.length > 0) {
+    for (const error of errors) {
+      log.error(error);
+    }
+    log.warn('Config reload aborted due to validation errors');
+    return;
+  }
+  config = newConfig;
   applyLoggingConfig(config);
   if (event === 'unlink') {
     log.info(`Config file removed: ${configPath}`);
@@ -107,6 +153,16 @@ export const configHandlers = {
         id,
         name,
         vendor,
+        model,
+      })),
+    };
+  },
+
+  async listAgents() {
+    return {
+      agents: (config.agents ?? []).map(({ id, name, model }) => ({
+        id,
+        name,
         model,
       })),
     };

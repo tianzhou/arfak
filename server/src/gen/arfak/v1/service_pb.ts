@@ -344,3 +344,131 @@ export class Model extends Message<Model> {
     return proto3.util.equals(Model, a, b);
   }
 }
+
+/**
+ * @generated from message arfak.v1.ListAgentsRequest
+ */
+export class ListAgentsRequest extends Message<ListAgentsRequest> {
+  constructor(data?: PartialMessage<ListAgentsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.ListAgentsRequest';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => []);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListAgentsRequest {
+    return new ListAgentsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListAgentsRequest {
+    return new ListAgentsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListAgentsRequest {
+    return new ListAgentsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: ListAgentsRequest | PlainMessage<ListAgentsRequest> | undefined,
+    b: ListAgentsRequest | PlainMessage<ListAgentsRequest> | undefined,
+  ): boolean {
+    return proto3.util.equals(ListAgentsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.ListAgentsResponse
+ */
+export class ListAgentsResponse extends Message<ListAgentsResponse> {
+  /**
+   * @generated from field: repeated arfak.v1.Agent agents = 1;
+   */
+  agents: Agent[] = [];
+
+  constructor(data?: PartialMessage<ListAgentsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.ListAgentsResponse';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'agents', kind: 'message', T: Agent, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListAgentsResponse {
+    return new ListAgentsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListAgentsResponse {
+    return new ListAgentsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): ListAgentsResponse {
+    return new ListAgentsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: ListAgentsResponse | PlainMessage<ListAgentsResponse> | undefined,
+    b: ListAgentsResponse | PlainMessage<ListAgentsResponse> | undefined,
+  ): boolean {
+    return proto3.util.equals(ListAgentsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.Agent
+ */
+export class Agent extends Message<Agent> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = '';
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name = '';
+
+  /**
+   * @generated from field: string model = 3;
+   */
+  model = '';
+
+  constructor(data?: PartialMessage<Agent>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.Agent';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'name', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: 'model', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Agent {
+    return new Agent().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Agent {
+    return new Agent().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Agent {
+    return new Agent().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: Agent | PlainMessage<Agent> | undefined,
+    b: Agent | PlainMessage<Agent> | undefined,
+  ): boolean {
+    return proto3.util.equals(Agent, a, b);
+  }
+}

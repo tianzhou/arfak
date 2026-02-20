@@ -7,6 +7,8 @@ import { MethodKind } from '@bufbuild/protobuf';
 import {
   GetConfigRequest,
   GetConfigResponse,
+  ListAgentsRequest,
+  ListAgentsResponse,
   ListModelsRequest,
   ListModelsResponse,
   PingRequest,
@@ -44,6 +46,15 @@ export const ArfakService = {
       name: 'ListModels',
       I: ListModelsRequest,
       O: ListModelsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc arfak.v1.ArfakService.ListAgents
+     */
+    listAgents: {
+      name: 'ListAgents',
+      I: ListAgentsRequest,
+      O: ListAgentsResponse,
       kind: MethodKind.Unary,
     },
   },

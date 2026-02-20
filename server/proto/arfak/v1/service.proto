@@ -6,6 +6,7 @@ service ArfakService {
   rpc Ping(PingRequest) returns (PingResponse);
   rpc GetConfig(GetConfigRequest) returns (GetConfigResponse);
   rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
+  rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
 }
 
 message PingRequest {}
@@ -37,4 +38,16 @@ message Model {
   string name = 2;
   string vendor = 3;
   string model = 4;
+}
+
+message ListAgentsRequest {}
+
+message ListAgentsResponse {
+  repeated Agent agents = 1;
+}
+
+message Agent {
+  string id = 1;
+  string name = 2;
+  string model = 3;
 }

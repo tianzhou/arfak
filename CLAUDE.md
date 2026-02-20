@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Structure
 
 Monorepo managed by pnpm workspaces:
+
 - `ui/` — Frontend (React SPA)
 - `server/` — Backend (Node.js + ConnectRPC)
 
@@ -56,6 +57,19 @@ pnpm --filter @arfak/server tsc:check # TypeScript type checking
 - `server/src/logging/` — Structured logging with subsystem loggers
 - `server/src/lib/` — Shared server utilities
 - `server/src/services/` — ConnectRPC service handlers
+
+## Configuration (`arfak.toml`)
+
+Loaded at startup from `arfak.toml` (override with `ARFAK_CONFIG` env var). Hot-reloaded on file changes; invalid configs are rejected and the previous config is kept.
+
+- `[general.logging]` — log level and file path
+- `[general.banner]` — optional UI banner with text, link, and color
+- `[[models]]` — LLM providers; each entry has `id`, `name`, `vendor`, `model`, `api_key`
+- `[[agents]]` — named agents; each entry has `id`, `name`, `model` (must reference a model `id`)
+
+When adding new config fields, add corresponding validation in `validateConfig()` in `server/src/services/config.ts`. Validation runs at startup (fatal) and on hot-reload (aborts reload, keeps old config).
+
+See `arfak.toml.example` for a full annotated reference.
 
 ## Logging
 
