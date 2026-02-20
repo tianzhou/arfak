@@ -22,6 +22,13 @@ const server = http.createServer((req, res) => {
 });
 
 const port = parseInt(process.env.PORT ?? '3000', 10);
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    log.fatal(`Port ${port} is already in use. Stop the other process or set PORT=<port> to use a different port.`);
+    process.exit(1);
+  }
+  throw err;
+});
 server.listen(port, () => {
   log.info(`Server listening on http://localhost:${port}`);
 });
