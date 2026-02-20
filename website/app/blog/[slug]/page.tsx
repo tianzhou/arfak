@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import { Navbar } from "../../components/navbar";
 import { MacWindow } from "../../components/mac-window";
 import { Footer } from "../../components/footer";
-import { getAllPosts, getPostBySlug } from "../../lib/blog";
+import { getAllPosts, getPostBySlug, getRelatedPosts } from "../../lib/blog";
 import { mdxComponents } from "../../lib/mdx-components";
 
 export function generateStaticParams() {
@@ -31,6 +31,7 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
+  const related = getRelatedPosts(post.meta);
 
   return (
     <div className="min-h-screen">
@@ -87,6 +88,21 @@ export default async function BlogPostPage({
             </article>
           </MacWindow>
         </div>
+
+        {related.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-lg font-bold tracking-tight">Related Posts</h2>
+            <div className="mt-4 divide-y-2 divide-foreground border-y-2 border-foreground bg-background">
+              {related.map((p) => (
+                <a key={p.slug} href={`/blog/${p.slug}`} className="flex items-baseline gap-4 px-4 py-3 hover:bg-foreground/5">
+                  <span className="shrink-0 border border-foreground px-1.5 py-0.5 text-xs font-medium">{p.category}</span>
+                  <h3 className="text-sm font-bold">{p.title}</h3>
+                  <time className="ml-auto shrink-0 text-xs">{p.date}</time>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
       <Footer />

@@ -45,3 +45,16 @@ export function getAllPosts(): Post[] {
 export function getPostBySlug(slug: string) {
   return readPost(slug);
 }
+
+export function getRelatedPosts(current: Post, limit = 3): Post[] {
+  const currentTime = new Date(current.date).getTime();
+
+  return getAllPosts()
+    .filter((p) => p.slug !== current.slug && p.category === current.category)
+    .sort(
+      (a, b) =>
+        Math.abs(new Date(a.date).getTime() - currentTime) -
+        Math.abs(new Date(b.date).getTime() - currentTime)
+    )
+    .slice(0, limit);
+}
