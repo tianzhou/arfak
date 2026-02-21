@@ -60,10 +60,20 @@ pnpm --filter @arfak/server tsc:check # TypeScript type checking
 
 ## Profile Directory
 
-Controlled by `ARFAK_PROFILE` env var (dev default: `$PWD/.arfak`, prod default: `~/.arfak`). Contains two parallel subdirectories:
+Controlled by `ARFAK_PROFILE` env var (dev default: `$PWD/.arfak`, prod default: `~/.arfak`). Each profile is self-contained with independent agents. Inspired by the Linux FHS / XDG separation of concerns:
 
-- `workspace/` — git-tracked authored content (agents, config)
-- `state/` — runtime data, never committed (sessions, credentials)
+```
+$ARFAK_PROFILE/
+├── arfak.toml              # System config (API keys, models, logging) — not git-tracked
+├── workspace/              # Git-tracked — agent definitions, prompts, authored content
+│   └── agents/{id}/        # Per-agent config (system prompt, tools, personality)
+└── state/                  # Not git-tracked — mutable runtime data
+    └── agents/{id}/        # Per-agent state (sessions, history, memory)
+```
+
+- `arfak.toml` — system-level config with secrets, lives at the profile root
+- `workspace/` — portable, declarative, version-controlled (analogous to `~/.config`)
+- `state/` — runtime data that persists across restarts but is not backed up (analogous to `~/.local/state`)
 
 ### Configuration (`arfak.toml`)
 
