@@ -1,0 +1,324 @@
+---
+title: 'How OpenClaw Works #3 — The Agent Loop'
+date: '2026-02-22'
+description: 'How OpenClaw turns a single LLM call into a resilient execution loop with session serialization, auto-compaction, and model fallback.'
+featured: false
+category: 'Engineering'
+---
+
+Post #3 in **How OpenClaw Works** — a series studying patterns from the [OpenClaw](https://github.com/openclaw/openclaw) codebase, an open-source personal AI assistant.
+
+Source: [`run.ts`](https://github.com/openclaw/openclaw/blob/e1cb73cd/src/agents/pi-embedded-runner/run.ts)
+
+**Key dependencies:**
+
+- [@mariozechner/pi-agent-core](https://github.com/nickvdyck/pi-agent-core) — The underlying LLM session runtime. OpenClaw doesn't implement tool-use loops from scratch — it delegates the model ↔ tool cycle to pi-agent-core and wraps it with production concerns: retries, compaction, auth rotation.
+- [TypeBox](https://github.com/sinclairzx81/typebox) — JSON Schema builder for validating RPC params at the gateway boundary. Keeps validation schemas co-located with handler code instead of in separate `.json` files.
+
+## The Problem
+
+A single LLM call is stateless — you send messages, you get a response. An agent needs more: call the model, execute whatever tools it requests, feed the results back, repeat until the model decides it's done.
+
+But production loops break in ways that toy implementations don't. The context window fills up mid-conversation. API keys hit rate limits. The model picks a thinking level the provider doesn't support. Two messages arrive for the same session simultaneously. A `while(true)` loop handles the happy path; the other 900 lines of `run.ts` handle everything else.
+
+## The Pipeline
+
+```
+WebSocket RPC
+  → Validate params, respond { status: "accepted" }
+    → Resolve model, skills, thinking level
+      → Serialize into session queue
+        → while(true): run attempt
+          → Build prompt, call LLM, execute tools
+            → Bridge events to stream
+              → Handle failure: compact / rotate / fallback
+                → Assemble reply payloads
+```
+
+## Fire and Forget
+
+The `agent` RPC handler doesn't wait for the model to finish. It validates params, resolves the session, and returns immediately:
+
+```typescript
+const accepted = {
+  runId,
+  status: 'accepted' as const,
+  acceptedAt: Date.now(),
+};
+
+context.dedupe.set(`agent:${idem}`, {
+  ts: Date.now(),
+  ok: true,
+  payload: accepted,
+});
+respond(true, accepted, undefined, { runId });
+
+void agentCommand({ message, images, sessionId, sessionKey /* ... */ }, runtime, deps)
+  .then((result) => {
+    const payload = { runId, status: 'ok', summary: 'completed', result };
+    context.dedupe.set(`agent:${idem}`, { ts: Date.now(), ok: true, payload });
+    respond(true, payload, undefined, { runId });
+  })
+  .catch((err) => {
+    const payload = { runId, status: 'error', summary: String(err) };
+    context.dedupe.set(`agent:${idem}`, { ts: Date.now(), ok: false, payload });
+    respond(false, payload, errorShape(ErrorCodes.UNAVAILABLE, String(err)), { runId });
+  });
+```
+
+The client gets `{ status: "accepted" }` within milliseconds. The actual agent run streams events back over the same WebSocket connection as they happen. When the run finishes — or fails — a second response frame arrives with the final result.
+
+The `dedupe` map keyed by idempotency key prevents duplicate runs. If the client retries the same request (network hiccup, reconnect), the handler returns the cached result instead of spawning a second run.
+
+## Session Serialization
+
+Before the agent loop starts, `runEmbeddedPiAgent` acquires two queue slots:
+
+```typescript
+const sessionLane = resolveSessionLane(params.sessionKey || params.sessionId);
+const globalLane = resolveGlobalLane(params.lane);
+
+return enqueueSession(() =>
+  enqueueGlobal(async () => {
+    // ... the entire agent run happens inside these queues
+  }),
+);
+```
+
+`enqueueSession` serializes runs per session. `enqueueGlobal` optionally serializes across sessions (used by messaging channels that need ordered delivery).
+
+Why not a lock? Locks protect shared data. Queues serialize _work_. The distinction matters — a lock would block the caller, while a queue lets the RPC handler return immediately and the run waits its turn. When two messages arrive for the same session, the second queues behind the first instead of racing it.
+
+This prevents a class of bugs that are hard to reproduce: tool calls mutating session state while a parallel run reads it, or two runs appending to the same transcript simultaneously.
+
+## The Retry Loop
+
+The core of `run.ts` is a `while(true)` with three retry paths:
+
+```typescript
+const MAX_OVERFLOW_COMPACTION_ATTEMPTS = 3;
+let overflowCompactionAttempts = 0;
+
+while (true) {
+  attemptedThinking.add(thinkLevel);
+
+  const attempt = await runEmbeddedAttempt({
+    sessionId: params.sessionId,
+    onPartialReply: params.onPartialReply,
+    onBlockReply: params.onBlockReply,
+    onToolResult: params.onToolResult,
+    onAgentEvent: params.onAgentEvent,
+    // ... dozens of parameters
+  });
+
+  // Path 1: Context overflow → compact → retry
+  if (contextOverflowError) {
+    const compactResult = await compactEmbeddedPiSessionDirect({
+      /* ... */
+    });
+    if (compactResult.compacted) {
+      overflowCompactionAttempts++;
+      continue;
+    }
+  }
+
+  // Path 2: Auth failure → rotate API key → retry
+  if (shouldRotate) {
+    const rotated = await advanceAuthProfile();
+    if (rotated) continue;
+    if (fallbackConfigured) {
+      throw new FailoverError(message, { reason, provider, model, profileId });
+    }
+  }
+
+  // Path 3: Thinking level unsupported → downgrade → retry
+  // (handled via attemptedThinking set)
+
+  // Success
+  const payloads = buildEmbeddedRunPayloads({
+    /* ... */
+  });
+  return {
+    payloads: payloads.length ? payloads : undefined,
+    meta: { durationMs: Date.now() - started, agentMeta, aborted },
+    didSendViaMessagingTool: attempt.didSendViaMessagingTool,
+    messagingToolSentTexts: attempt.messagingToolSentTexts,
+  };
+}
+```
+
+**Context overflow** is the most common failure. Long conversations or large tool results push the transcript past the model's context window. The loop calls `compactEmbeddedPiSessionDirect` — which asks the model to summarize the conversation so far — then retries with the shorter transcript. Up to 3 attempts, because compaction itself can produce output that's still too long. This is why the heartbeat runner ([Post #2](/blog/how-openclaw-works-heartbeat-runner#transcript-pruning)) prunes no-op cycles — 48 empty heartbeats per day would accelerate context overflow significantly.
+
+**Auth rotation** handles rate limits and billing failures. OpenClaw supports multiple API keys per provider. When one key hits a limit, `advanceAuthProfile` switches to the next. If all keys are exhausted and a fallback model is configured, it throws `FailoverError` — caught by the outer `runWithModelFallback` wrapper, which retries with the fallback provider.
+
+**Thinking level fallback** tracks which thinking levels have been attempted. If a provider rejects `"high"` thinking, the loop downgrades to `"medium"` or `"low"` and retries — but never tries the same level twice.
+
+The alternative — propagating these errors to the caller — would mean every client needs retry logic for context overflow, rate limits, and provider quirks. Handling it inside the loop keeps the failure modes invisible to callers.
+
+## Event Bridging
+
+The model runs inside `pi-agent-core`. OpenClaw clients consume a different event stream. `subscribeEmbeddedPiSession` bridges the gap:
+
+```typescript
+export function createEmbeddedPiSessionEventHandler(ctx: EmbeddedPiSubscribeContext) {
+  return (evt: EmbeddedPiSubscribeEvent) => {
+    switch (evt.type) {
+      case 'message_start':
+        handleMessageStart(ctx, evt);
+        return;
+      case 'message_update':
+        handleMessageUpdate(ctx, evt);
+        return;
+      case 'message_end':
+        handleMessageEnd(ctx, evt);
+        return;
+      case 'tool_execution_start':
+        handleToolExecutionStart(ctx, evt);
+        return;
+      case 'tool_execution_end':
+        handleToolExecutionEnd(ctx, evt);
+        return;
+      case 'auto_compaction_start':
+        handleAutoCompactionStart(ctx);
+        return;
+      case 'auto_compaction_end':
+        handleAutoCompactionEnd(ctx, evt);
+        return;
+      case 'agent_end':
+        handleAgentEnd(ctx);
+        return;
+    }
+  };
+}
+```
+
+Each handler translates a pi-agent-core event into zero or more OpenClaw `emitAgentEvent` calls. But translation isn't 1:1 — the bridge layer does real work:
+
+**Think-tag stripping** — some models wrap reasoning in `<think>` or `<thinking>` tags. The bridge strips these before they reach the client, routing reasoning content to a separate stream.
+
+**Block chunking** — long model responses get split into paragraph-sized chunks for incremental delivery. The client renders each chunk as it arrives instead of waiting for the full response.
+
+**Messaging tool deduplication** — when the model sends a message via a tool call (e.g., sending a WhatsApp message), the bridge suppresses the duplicate text that would otherwise appear in the assistant's block reply. Without this, the user sees the same message twice.
+
+## Reply Shaping
+
+After the loop exits, `buildEmbeddedRunPayloads` assembles the final output:
+
+```typescript
+export type EmbeddedPiRunResult = {
+  payloads?: Array<{
+    text?: string;
+    mediaUrl?: string;
+    mediaUrls?: string[];
+    isError?: boolean;
+  }>;
+  meta: EmbeddedPiRunMeta;
+  didSendViaMessagingTool?: boolean;
+  messagingToolSentTexts?: string[];
+};
+```
+
+Two edge cases stand out.
+
+`NO_REPLY` is a sentinel token the model outputs when it has nothing to say (common after tool-only turns). The payload builder filters it — callers never see it:
+
+```typescript
+// NO_REPLY is treated as a silent token and filtered from outgoing payloads
+```
+
+**Error fallback** — if the model produced no renderable payloads _and_ a tool errored during the run, the builder synthesizes an error payload. This prevents silent failures where the user sends a message and gets nothing back.
+
+## Run Lifecycle
+
+Active runs are tracked in a global `Map`, giving the rest of the system a handle to interact with in-flight runs:
+
+```typescript
+const ACTIVE_EMBEDDED_RUNS = new Map<string, EmbeddedPiQueueHandle>();
+
+type EmbeddedPiQueueHandle = {
+  queueMessage: (text: string) => Promise<void>;
+  isStreaming: () => boolean;
+  isCompacting: () => boolean;
+  abort: () => void;
+};
+```
+
+`queueMessage` lets external systems inject follow-up messages into an active run without starting a new one. `abort` triggers the abort signal passed to pi-agent-core, which stops the model mid-stream. `isCompacting` gates message injection — you don't want to queue a message while the session is being compacted, because the compaction would immediately invalidate it.
+
+This is how the `/stop` command works: the gateway calls `abortEmbeddedPiRun(sessionId)`, which sets the abort signal. The pi-agent-core runtime checks this signal between tool calls and stops the loop.
+
+## What Survives a Restart
+
+Everything above — active runs, session queues, dedupe caches, event sequences — lives in process memory. Kill the process and it's gone. So what _does_ survive?
+
+**Session transcripts.** Each conversation is an append-only JSONL file managed by pi-agent-core's `SessionManager`:
+
+```typescript
+_persist(entry: SessionEntry): void {
+  if (!this.flushed) {
+    // First flush: bulk write header + user + assistant
+    for (const e of this.fileEntries) {
+      appendFileSync(this.sessionFile, `${JSON.stringify(e)}\n`);
+    }
+    this.flushed = true;
+  } else {
+    // Subsequent: append one line per message
+    appendFileSync(this.sessionFile, `${JSON.stringify(entry)}\n`);
+  }
+}
+```
+
+Two details matter. First, nothing is written until the first assistant message arrives — if the process dies between receiving a user message and the model's first response, the user message is lost from the file. Second, `appendFileSync` is synchronous and writes one line at a time, so a crash mid-write loses at most one partial JSONL line. On restart, the loader skips malformed lines.
+
+OpenClaw adds a repair layer on top:
+
+```typescript
+const cleaned = entries.map((entry) => JSON.stringify(entry)).join('\n') + '\n';
+const backupPath = `${sessionFile}.bak-${process.pid}-${Date.now()}`;
+const tmpPath = `${sessionFile}.repair-${process.pid}-${Date.now()}.tmp`;
+await fs.writeFile(backupPath, content, 'utf-8');
+await fs.writeFile(tmpPath, cleaned, 'utf-8');
+await fs.rename(tmpPath, sessionFile);
+```
+
+Backup the corrupt file, write a cleaned version to a temp path, atomic rename into place. The original is never modified in-place.
+
+**Session write locks** also persist — they're lock files with a PID. Stale locks (from a crashed process) are auto-detected after 30 minutes and reclaimed.
+
+Everything else is ephemeral:
+
+| Component           | Persisted?      | On restart                           |
+| ------------------- | --------------- | ------------------------------------ |
+| Session transcripts | JSONL files     | Lose at most one partial line        |
+| Active runs         | In-memory `Map` | All in-flight runs lost              |
+| Session queues      | In-memory `Map` | Queued messages lost                 |
+| Dedupe caches       | In-memory `Map` | Duplicates possible for ~20 min      |
+| Event sequences     | In-memory `Map` | Counters reset; SSE clients see gaps |
+| Write locks         | Lock files      | Stale locks auto-reclaimed           |
+
+The architecture is **session-file-durable but run-ephemeral**. Conversation history survives crashes. In-flight execution doesn't.
+
+This is a deliberate tradeoff. Persisting run state would mean a write-ahead log, checkpoint recovery, and replaying partially-executed tool calls — complexity that buys little when the failure mode is "user sends the message again." The session file gives the model enough context to pick up where it left off. The run itself is disposable.
+
+Before restarting, the gateway tries to drain gracefully:
+
+```typescript
+export function deferGatewayRestartUntilIdle(opts: {
+  getPendingCount: () => number;
+  pollMs?: number; // default 500ms
+  maxWaitMs?: number; // default 30 seconds
+}): void;
+```
+
+It polls pending work every 500ms and delays the restart signal until idle — or until the 30-second timeout expires, whichever comes first. Config hot-reload ([Post #1](/blog/how-openclaw-works-config-hot-reload)) triggers this path, so most restarts wait for active runs to finish.
+
+## Takeaways
+
+1. **Fire-and-forget with idempotency** — return immediately, stream results async, deduplicate by idempotency key. Clients don't need to hold connections open for the full run.
+2. **Serialize with queues, not locks** — `enqueueSession` serializes work per session without blocking callers. The queue makes ordering explicit and prevents state corruption from concurrent runs.
+3. **Retry inside the loop, not outside** — context overflow, rate limits, and thinking level mismatches are handled by the loop itself. Callers don't need to know these failure modes exist.
+4. **Bridge events at the boundary** — `subscribeEmbeddedPiSession` is a translation layer that strips, chunks, and deduplicates. Keeping this at the boundary means neither side needs to know about the other's event format.
+5. **Track active runs as handles** — a `Map<sessionId, handle>` gives the system abort, queue, and status capabilities without coupling to the run's internals.
+6. **Persist conversations, not runs** — session transcripts survive crashes via append-only JSONL. Run state is ephemeral. Recovering a run would require checkpointing and tool replay; recovering a conversation just means re-opening the file.
+
+Next in the series: how OpenClaw assembles system prompts from workspace config, skills, context files, and runtime info — the "brain loading" phase before the first model call.

@@ -1,9 +1,9 @@
 ---
-title: "How OpenClaw Works #2 — Heartbeat Runner"
-date: "2026-02-20"
-description: "How OpenClaw turns a periodic timer into proactive behavior with timezone-aware scheduling, event classification, and duplicate suppression."
+title: 'How OpenClaw Works #2 — Heartbeat Runner'
+date: '2026-02-20'
+description: 'How OpenClaw turns a periodic timer into proactive behavior with timezone-aware scheduling, event classification, and duplicate suppression.'
 featured: false
-category: "Engineering"
+category: 'Engineering'
 ---
 
 Post #2 in **How OpenClaw Works** — a series studying patterns from the [OpenClaw](https://github.com/openclaw/openclaw) codebase, an open-source personal AI assistant.
@@ -46,7 +46,7 @@ function resolveHeartbeatAgents(cfg: OpenClawConfig): string[] {
     return explicit.map((a) => a.id);
   }
   // No agent explicitly opts in → default agent only
-  return [cfg.agents?.defaults?.id ?? "default"];
+  return [cfg.agents?.defaults?.id ?? 'default'];
 }
 ```
 
@@ -93,14 +93,14 @@ Three design choices stand out:
 ```typescript
 function resolveActiveHoursTimezone(cfg: OpenClawConfig, raw?: string): string {
   const trimmed = raw?.trim();
-  if (!trimmed || trimmed === "user") {
+  if (!trimmed || trimmed === 'user') {
     return resolveUserTimezone(cfg.agents?.defaults?.userTimezone);
   }
-  if (trimmed === "local") {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  if (trimmed === 'local') {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   }
   try {
-    new Intl.DateTimeFormat("en-US", { timeZone: trimmed }).format(new Date());
+    new Intl.DateTimeFormat('en-US', { timeZone: trimmed }).format(new Date());
     return trimmed;
   } catch {
     return resolveUserTimezone(cfg.agents?.defaults?.userTimezone);
@@ -125,8 +125,8 @@ function isHeartbeatNoiseEvent(evt: string): boolean {
   if (!lower) return false;
   return (
     isHeartbeatAckEvent(lower) ||
-    lower.includes("heartbeat poll") ||
-    lower.includes("heartbeat wake")
+    lower.includes('heartbeat poll') ||
+    lower.includes('heartbeat wake')
   );
 }
 ```
@@ -137,14 +137,14 @@ When real cron events exist, `buildCronEventPrompt` embeds them directly:
 
 ```typescript
 export function buildCronEventPrompt(pendingEvents: string[]): string {
-  const eventText = pendingEvents.join("\n").trim();
+  const eventText = pendingEvents.join('\n').trim();
   if (!eventText) {
-    return "A scheduled cron event was triggered, but no event content was found. Reply HEARTBEAT_OK.";
+    return 'A scheduled cron event was triggered, but no event content was found. Reply HEARTBEAT_OK.';
   }
   return (
-    "A scheduled reminder has been triggered. The reminder content is:\n\n" +
+    'A scheduled reminder has been triggered. The reminder content is:\n\n' +
     eventText +
-    "\n\nPlease relay this reminder to the user in a helpful and friendly way."
+    '\n\nPlease relay this reminder to the user in a helpful and friendly way.'
   );
 }
 ```
@@ -156,15 +156,19 @@ The prompt includes the event text directly instead of saying "check the system 
 The runner tracks what it last sent and when:
 
 ```typescript
-if (lastHeartbeatText === normalizedText &&
-    lastHeartbeatSentAt &&
-    Date.now() - lastHeartbeatSentAt < 24 * 60 * 60 * 1000) {
+if (
+  lastHeartbeatText === normalizedText &&
+  lastHeartbeatSentAt &&
+  Date.now() - lastHeartbeatSentAt < 24 * 60 * 60 * 1000
+) {
   // Same text within 24 hours — skip delivery
   return;
 }
 ```
 
 If the model produces the same reply twice within 24 hours, it gets dropped. This catches a common failure mode: the model generating the same "good morning" check-in because nothing has changed since the last heartbeat.
+
+Note that `lastHeartbeatText` and `lastHeartbeatSentAt` are in-memory state — a restart resets them. This is acceptable: the worst case is one duplicate message after a restart, and the 24-hour window means it self-corrects quickly.
 
 ## Transcript Pruning
 
@@ -179,7 +183,7 @@ function pruneHeartbeatTranscript(session, preHeartbeatSize) {
 
 Before calling the model, the runner snapshots the transcript length. If the reply is effectively empty (a `HEARTBEAT_OK` or variant), it rolls the transcript back. No-op heartbeats leave no trace in the conversation context.
 
-This is critical for long-running sessions. A 30-minute heartbeat interval means 48 heartbeat cycles per day. Without pruning, the transcript fills with "anything to report?" / "nope" exchanges that crowd out real conversation.
+This is critical for long-running sessions. A 30-minute heartbeat interval means 48 heartbeat cycles per day. Without pruning, the transcript fills with "anything to report?" / "nope" exchanges that crowd out real conversation. And because session transcripts are append-only JSONL files that persist across restarts ([Post #3](/blog/how-openclaw-works-agent-loop#what-survives-a-restart)), unpruned heartbeats would accumulate permanently.
 
 ## The Scheduler
 
@@ -200,7 +204,7 @@ function scheduleNext() {
 }
 ```
 
-Each agent tracks its own `nextDueMs`. The scheduler picks the earliest and sets a single timer. When a wake event arrives (exec completion, cron trigger), it can target a specific agent by ID or session key, advancing that agent's due time to now.
+Each agent tracks its own `nextDueMs`. The scheduler picks the earliest and sets a single timer. When a wake event arrives (exec completion, cron trigger), it can target a specific agent by ID or session key, advancing that agent's due time to now. Each tick calls into the agent loop ([Post #3](/blog/how-openclaw-works-agent-loop)), which serializes the run into the session queue — so a heartbeat tick never races a user message for the same session.
 
 Config hot-reload (covered in [Post #1](/blog/how-openclaw-works-config-hot-reload)) feeds into this via `updateConfig` — new intervals, changed active hours, or added agents take effect on the next tick without restarting the scheduler.
 
@@ -212,4 +216,4 @@ Config hot-reload (covered in [Post #1](/blog/how-openclaw-works-config-hot-relo
 4. **Embed data in prompts, don't reference it** — `buildCronEventPrompt` puts the event text in the prompt directly because context may have been pruned since the event was logged
 5. **Single-timer scheduling over setInterval** — one `setTimeout` for the next due event handles per-agent intervals, wake events, and config changes without timer management
 
-Next in the series: how OpenClaw routes outbound messages across WhatsApp, Telegram, and Slack with a unified channel abstraction.
+Next in the series: [how OpenClaw's agent loop turns a single LLM call into a resilient execution cycle](/blog/how-openclaw-works-agent-loop).
