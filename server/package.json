@@ -14,7 +14,8 @@
     "@connectrpc/connect": "^1.7.0",
     "@connectrpc/connect-node": "^1.7.0",
     "chokidar": "^5.0.0",
-    "smol-toml": "^1.6.0"
+    "smol-toml": "^1.6.0",
+    "uuidv7": "^1.1.0"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.61.0",
