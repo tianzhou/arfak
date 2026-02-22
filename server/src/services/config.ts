@@ -2,7 +2,13 @@ import { watch } from 'chokidar';
 import fs from 'node:fs';
 import path from 'node:path';
 import { parse } from 'smol-toml';
-import { getProfileDir } from '../lib/profile.js';
+import {
+  getProfileDir,
+  readAgentKnowledge,
+  readAgentMemory,
+  readAgentRules,
+  readAgentSoul,
+} from '../lib/profile.js';
 import {
   createSubsystemLogger,
   normalizeLogLevel,
@@ -166,6 +172,10 @@ export const configHandlers = {
         id,
         name,
         model,
+        soul: readAgentSoul(id),
+        memory: readAgentMemory(id),
+        rules: readAgentRules(id),
+        knowledge: readAgentKnowledge(id),
       })),
     };
   },

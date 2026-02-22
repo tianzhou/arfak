@@ -422,6 +422,98 @@ export class ListAgentsResponse extends Message<ListAgentsResponse> {
 }
 
 /**
+ * @generated from message arfak.v1.MemoryEntry
+ */
+export class MemoryEntry extends Message<MemoryEntry> {
+  /**
+   * @generated from field: string label = 1;
+   */
+  label = '';
+
+  /**
+   * @generated from field: string content = 2;
+   */
+  content = '';
+
+  constructor(data?: PartialMessage<MemoryEntry>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.MemoryEntry';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'label', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'content', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): MemoryEntry {
+    return new MemoryEntry().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): MemoryEntry {
+    return new MemoryEntry().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): MemoryEntry {
+    return new MemoryEntry().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: MemoryEntry | PlainMessage<MemoryEntry> | undefined,
+    b: MemoryEntry | PlainMessage<MemoryEntry> | undefined,
+  ): boolean {
+    return proto3.util.equals(MemoryEntry, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.KnowledgeEntry
+ */
+export class KnowledgeEntry extends Message<KnowledgeEntry> {
+  /**
+   * @generated from field: string label = 1;
+   */
+  label = '';
+
+  /**
+   * @generated from field: string content = 2;
+   */
+  content = '';
+
+  constructor(data?: PartialMessage<KnowledgeEntry>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.KnowledgeEntry';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'label', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'content', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): KnowledgeEntry {
+    return new KnowledgeEntry().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): KnowledgeEntry {
+    return new KnowledgeEntry().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): KnowledgeEntry {
+    return new KnowledgeEntry().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: KnowledgeEntry | PlainMessage<KnowledgeEntry> | undefined,
+    b: KnowledgeEntry | PlainMessage<KnowledgeEntry> | undefined,
+  ): boolean {
+    return proto3.util.equals(KnowledgeEntry, a, b);
+  }
+}
+
+/**
  * @generated from message arfak.v1.Agent
  */
 export class Agent extends Message<Agent> {
@@ -440,6 +532,26 @@ export class Agent extends Message<Agent> {
    */
   model = '';
 
+  /**
+   * @generated from field: string soul = 4;
+   */
+  soul = '';
+
+  /**
+   * @generated from field: repeated arfak.v1.MemoryEntry memory = 5;
+   */
+  memory: MemoryEntry[] = [];
+
+  /**
+   * @generated from field: string rules = 6;
+   */
+  rules = '';
+
+  /**
+   * @generated from field: repeated arfak.v1.KnowledgeEntry knowledge = 7;
+   */
+  knowledge: KnowledgeEntry[] = [];
+
   constructor(data?: PartialMessage<Agent>) {
     super();
     proto3.util.initPartial(data, this);
@@ -451,6 +563,10 @@ export class Agent extends Message<Agent> {
     { no: 1, name: 'id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
     { no: 2, name: 'name', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
     { no: 3, name: 'model', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: 'soul', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: 'memory', kind: 'message', T: MemoryEntry, repeated: true },
+    { no: 6, name: 'rules', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: 'knowledge', kind: 'message', T: KnowledgeEntry, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Agent {

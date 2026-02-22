@@ -18,6 +18,7 @@ server/src/gen
 # Profile
 .arfak/*
 !.arfak/arfak.toml.example
+!.arfak/workspace/
 
 # Plans
 plans/

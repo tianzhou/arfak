@@ -46,8 +46,22 @@ message ListAgentsResponse {
   repeated Agent agents = 1;
 }
 
+message MemoryEntry {
+  string label = 1;
+  string content = 2;
+}
+
+message KnowledgeEntry {
+  string label = 1;
+  string content = 2;
+}
+
 message Agent {
   string id = 1;
   string name = 2;
   string model = 3;
+  string soul = 4;
+  repeated MemoryEntry memory = 5;
+  string rules = 6;
+  repeated KnowledgeEntry knowledge = 7;
 }

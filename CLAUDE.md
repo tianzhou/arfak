@@ -67,13 +67,41 @@ $ARFAK_PROFILE/
 ├── arfak.toml              # System config (API keys, models, logging) — not git-tracked
 ├── workspace/              # Git-tracked — agent definitions, prompts, authored content
 │   └── agents/{id}/        # Per-agent config (system prompt, tools, personality)
+│       ├── soul.md         # Persona — loaded as agent's soul
+│       ├── rules.md        # Guardrails and constraints (optional)
+│       └── knowledge/      # Domain knowledge (optional)
+│           └── *.md        # Each file = one KnowledgeEntry
 └── state/                  # Not git-tracked — mutable runtime data
     └── agents/{id}/        # Per-agent state (sessions, history, memory)
+        └── memory/         # Runtime memory entries (optional)
+            └── *.md        # Each file = one MemoryEntry
 ```
 
 - `arfak.toml` — system-level config with secrets, lives at the profile root
 - `workspace/` — portable, declarative, version-controlled (analogous to `~/.config`)
 - `state/` — runtime data that persists across restarts but is not backed up (analogous to `~/.local/state`)
+
+### Agent Context Files
+
+All `.md` files in agent directories support optional TOML frontmatter delimited by `+++`:
+
+```markdown
++++
+label = "Persona"
++++
+
+Your markdown content here...
+```
+
+- `label` — display label for the entry (defaults to filename without extension)
+- Content after the closing `+++` is the body text
+
+Four semantic context fields are loaded per agent:
+
+- **soul** (`workspace/agents/{id}/soul.md`) — persona, single string
+- **rules** (`workspace/agents/{id}/rules.md`) — guardrails, single string (optional)
+- **memory** (`state/agents/{id}/memory/*.md`) — runtime entries, array of `{ label, content }`
+- **knowledge** (`workspace/agents/{id}/knowledge/*.md`) — domain files, array of `{ label, content }`
 
 ### Configuration (`arfak.toml`)
 
