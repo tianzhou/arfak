@@ -26,9 +26,15 @@ export default function ChatPage() {
   const { messages } = useMessages(agentId, sessionId);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Redirect to default session when no sessionId or current session not found
+  // Sync URL with available sessions
   useEffect(() => {
-    if (sessions.length === 0 || !agentId) {
+    if (!agentId) {
+      return;
+    }
+    if (sessions.length === 0) {
+      if (sessionId) {
+        navigate(`/agents/${agentId}`, { replace: true });
+      }
       return;
     }
     if (!sessionId || !sessions.some((s) => s.id === sessionId)) {

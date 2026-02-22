@@ -63,19 +63,7 @@ async function fetchSessions(agentId: string) {
     if (state.agentId !== agentId) {
       return;
     }
-    const sessions = res.sessions;
-    if (sessions.length === 0) {
-      const created = await client.createSession({ agentId });
-      if (state.agentId !== agentId) {
-        return;
-      }
-      state = {
-        agentId,
-        sessions: created.session ? [created.session] : [],
-      };
-    } else {
-      state = { agentId, sessions };
-    }
+    state = { agentId, sessions: res.sessions };
     notify();
   } catch (error: unknown) {
     console.warn('[ListSessions] Failed:', error);
@@ -143,16 +131,8 @@ async function removeOtherSessions(agentId: string, keepSessionId: string) {
 
 async function removeAllSessions(agentId: string) {
   await deleteSessions(agentId, state.sessions);
-  try {
-    const res = await client.createSession({ agentId });
-    state = {
-      agentId,
-      sessions: res.session ? [res.session] : [],
-    };
-    notify();
-  } catch (error: unknown) {
-    console.warn('[CreateSession] Failed:', error);
-  }
+  state = { agentId, sessions: [] };
+  notify();
 }
 
 async function removeSessionsToRight(agentId: string, sessionId: string) {
