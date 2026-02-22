@@ -103,6 +103,9 @@ interface SessionMeta {
   title: string;
   created_at: string;
   updated_at: string;
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
 }
 
 interface MessageRecord {
@@ -124,14 +127,28 @@ export function createSession(agentId: string): {
   const dir = getSessionDir(agentId, id);
   fs.mkdirSync(dir, { recursive: true });
   const title = new Date(now).toLocaleString();
-  const meta: SessionMeta = { title, created_at: now, updated_at: now };
+  const meta: SessionMeta = {
+    title,
+    created_at: now,
+    updated_at: now,
+    input_tokens: 0,
+    output_tokens: 0,
+    total_tokens: 0,
+  };
   fs.writeFileSync(path.join(dir, 'meta.json'), JSON.stringify(meta));
   return { id, agentId, title: meta.title, createdAt: now, updatedAt: now };
 }
 
-export function listSessions(
-  agentId: string,
-): { id: string; agentId: string; title: string; createdAt: string; updatedAt: string }[] {
+export function listSessions(agentId: string): {
+  id: string;
+  agentId: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+}[] {
   const dir = getSessionsDir(agentId);
   let entries: string[];
   try {
@@ -151,6 +168,9 @@ export function listSessions(
           title: meta.title,
           createdAt: meta.created_at,
           updatedAt: meta.updated_at,
+          inputTokens: meta.input_tokens ?? 0,
+          outputTokens: meta.output_tokens ?? 0,
+          totalTokens: meta.total_tokens ?? 0,
         };
       } catch {
         return null;
@@ -162,6 +182,23 @@ export function listSessions(
 export function deleteSession(agentId: string, sessionId: string): void {
   const dir = getSessionDir(agentId, sessionId);
   fs.rmSync(dir, { recursive: true, force: true });
+}
+
+export function updateSessionTokenUsage(
+  agentId: string,
+  sessionId: string,
+  usage: { inputTokens: number; outputTokens: number; totalTokens: number },
+): void {
+  const metaPath = path.join(getSessionDir(agentId, sessionId), 'meta.json');
+  try {
+    const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8')) as SessionMeta;
+    meta.input_tokens = (meta.input_tokens ?? 0) + usage.inputTokens;
+    meta.output_tokens = (meta.output_tokens ?? 0) + usage.outputTokens;
+    meta.total_tokens = (meta.total_tokens ?? 0) + usage.totalTokens;
+    fs.writeFileSync(metaPath, JSON.stringify(meta));
+  } catch {
+    /* ignore — session may have been deleted */
+  }
 }
 
 export function appendMessage(

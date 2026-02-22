@@ -5,6 +5,7 @@ import {
   deleteSession,
   listMessages,
   listSessions,
+  updateSessionTokenUsage,
 } from '../lib/profile.js';
 import { composeSystemPrompt, createModelInstance } from './ai.js';
 import { getAgentConfig, getModelConfig } from './config.js';
@@ -68,6 +69,12 @@ export const sessionHandlers = {
     }
 
     const fullText = await result.text;
+    const usage = await result.usage;
+    updateSessionTokenUsage(req.agentId, req.sessionId, {
+      inputTokens: usage.inputTokens ?? 0,
+      outputTokens: usage.outputTokens ?? 0,
+      totalTokens: usage.totalTokens ?? 0,
+    });
     const assistantMsg = appendMessage(req.agentId, req.sessionId, 'assistant', fullText);
     yield {
       message: {
