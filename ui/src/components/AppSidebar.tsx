@@ -12,6 +12,7 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar.js';
 import { useAgents } from '@/hooks/use-agents.js';
+import { getLastSessionId } from '@/lib/utils.js';
 
 export default function AppSidebar({ hasBanner }: { hasBanner?: boolean }) {
   const location = useLocation();
@@ -33,7 +34,14 @@ export default function AppSidebar({ hasBanner }: { hasBanner?: boolean }) {
                   <SidebarMenuItem key={agent.id}>
                     <SidebarMenuButton
                       isActive={location.pathname.startsWith(`/agents/${agent.id}`)}
-                      onClick={() => navigate(`/agents/${agent.id}`)}
+                      onClick={() => {
+                        const savedSessionId = getLastSessionId(agent.id);
+                        navigate(
+                          savedSessionId
+                            ? `/agents/${agent.id}/sessions/${savedSessionId}`
+                            : `/agents/${agent.id}`,
+                        );
+                      }}
                       tooltip={agent.name}
                     >
                       <span>{agent.name}</span>

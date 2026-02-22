@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs.js';
 import { Textarea } from '@/components/ui/textarea.js';
 import { sendMessage, useMessages } from '@/hooks/use-messages.js';
 import { useSessions } from '@/hooks/use-sessions.js';
+import { getLastSessionId, saveLastSessionId } from '@/lib/utils.js';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
@@ -28,6 +29,13 @@ export default function ChatPage() {
   const { messages } = useMessages(agentId, sessionId);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // Persist last selected session per agent
+  useEffect(() => {
+    if (agentId && sessionId && sessions.some((s) => s.id === sessionId)) {
+      saveLastSessionId(agentId, sessionId);
+    }
+  }, [agentId, sessionId, sessions]);
+
   // Sync URL with available sessions (only after sessions are loaded)
   useEffect(() => {
     if (!agentId || !loaded) {
@@ -40,9 +48,10 @@ export default function ChatPage() {
       return;
     }
     if (!sessionId || !sessions.some((s) => s.id === sessionId)) {
-      const lastSession = sessions.at(-1);
-      if (lastSession) {
-        navigate(`/agents/${agentId}/sessions/${lastSession.id}`, { replace: true });
+      const savedId = getLastSessionId(agentId);
+      const target = sessions.find((s) => s.id === savedId) ?? sessions.at(-1);
+      if (target) {
+        navigate(`/agents/${agentId}/sessions/${target.id}`, { replace: true });
       }
     }
   }, [sessionId, sessions, loaded, agentId, navigate]);
