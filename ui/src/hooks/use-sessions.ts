@@ -96,6 +96,69 @@ async function removeSession(agentId: string, sessionId: string) {
   }
 }
 
+async function deleteSessions(agentId: string, sessions: Array<Session>) {
+  for (const s of sessions) {
+    try {
+      await client.deleteSession({ agentId, sessionId: s.id });
+    } catch (error: unknown) {
+      console.warn('[DeleteSession] Failed:', error);
+    }
+  }
+}
+
+function reorderSessions(fromIndex: number, toIndex: number) {
+  const sessions = [...state.sessions];
+  const [moved] = sessions.splice(fromIndex, 1);
+  sessions.splice(toIndex, 0, moved);
+  state = { ...state, sessions };
+  notify();
+}
+
+async function removeOtherSessions(agentId: string, keepSessionId: string) {
+  await deleteSessions(
+    agentId,
+    state.sessions.filter((s) => s.id !== keepSessionId),
+  );
+  state = {
+    agentId,
+    selectedId: keepSessionId,
+    sessions: state.sessions.filter((s) => s.id === keepSessionId),
+  };
+  notify();
+}
+
+async function removeAllSessions(agentId: string) {
+  await deleteSessions(agentId, state.sessions);
+  try {
+    const res = await client.createSession({ agentId });
+    state = {
+      agentId,
+      selectedId: res.session?.id,
+      sessions: res.session ? [res.session] : [],
+    };
+    notify();
+  } catch (error: unknown) {
+    console.warn('[CreateSession] Failed:', error);
+  }
+}
+
+async function removeSessionsToRight(agentId: string, sessionId: string) {
+  const idx = state.sessions.findIndex((s) => s.id === sessionId);
+  if (idx === -1) {
+    return;
+  }
+  await deleteSessions(agentId, state.sessions.slice(idx + 1));
+  const remaining = state.sessions.slice(0, idx + 1);
+  state = {
+    agentId,
+    selectedId: remaining.some((s) => s.id === state.selectedId)
+      ? state.selectedId
+      : remaining.at(-1)?.id,
+    sessions: remaining,
+  };
+  notify();
+}
+
 export function useSessions(agentId: string | undefined) {
   const snap = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
@@ -114,7 +177,13 @@ export function useSessions(agentId: string | undefined) {
 
   return {
     createSession: () => agentId && createSession(agentId),
+    removeAllSessions: () => agentId && removeAllSessions(agentId),
+    removeOtherSessions: (keepSessionId: string) =>
+      agentId && removeOtherSessions(agentId, keepSessionId),
     removeSession: (sessionId: string) => agentId && removeSession(agentId, sessionId),
+    removeSessionsToRight: (sessionId: string) =>
+      agentId && removeSessionsToRight(agentId, sessionId),
+    reorderSessions,
     selectedSession,
     selectSession,
     sessions: snap.sessions,

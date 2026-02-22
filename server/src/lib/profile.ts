@@ -123,7 +123,8 @@ export function createSession(agentId: string): {
   const now = new Date().toISOString();
   const dir = getSessionDir(agentId, id);
   fs.mkdirSync(dir, { recursive: true });
-  const meta: SessionMeta = { title: 'New session', created_at: now, updated_at: now };
+  const title = new Date(now).toLocaleString();
+  const meta: SessionMeta = { title, created_at: now, updated_at: now };
   fs.writeFileSync(path.join(dir, 'meta.json'), JSON.stringify(meta));
   return { id, agentId, title: meta.title, createdAt: now, updatedAt: now };
 }

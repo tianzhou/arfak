@@ -1,6 +1,8 @@
+import { ContextMenu } from '@base-ui/react/context-menu';
 import { ArrowUpIcon, PlusIcon, XIcon } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button.js';
+import { MenuItem, MenuSeparator } from '@/components/ui/menu.js';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs.js';
 import { Textarea } from '@/components/ui/textarea.js';
 import { useAgents } from '@/hooks/use-agents.js';
@@ -9,10 +11,19 @@ import { useSessions } from '@/hooks/use-sessions.js';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const { selectedAgent } = useAgents();
-  const { createSession, removeSession, selectedSession, selectSession, sessions } = useSessions(
-    selectedAgent?.id,
-  );
+  const {
+    createSession,
+    removeAllSessions,
+    removeOtherSessions,
+    removeSession,
+    removeSessionsToRight,
+    reorderSessions,
+    selectedSession,
+    selectSession,
+    sessions,
+  } = useSessions(selectedAgent?.id);
   const { messages } = useMessages(selectedAgent?.id, selectedSession?.id);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -52,33 +63,79 @@ export default function ChatPage() {
         onValueChange={(val) => selectSession(val as string)}
         value={selectedSession?.id}
       >
-        <div className="flex h-12 shrink-0 items-center border-b px-2">
-          <span className="shrink-0 px-2 text-sm font-semibold">{selectedAgent.name}</span>
-          <TabsList variant="underline">
-            {sessions.map((s) => (
-              <TabsTab key={s.id} value={s.id}>
-                <span className="truncate">{s.title || 'New session'}</span>
-                <button
-                  className="ml-1 rounded-sm p-0.5 opacity-0 group-hover:opacity-100 hover:bg-muted data-active:opacity-100"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeSession(s.id);
-                  }}
-                  type="button"
-                >
-                  <XIcon className="size-3" />
-                </button>
-              </TabsTab>
-            ))}
-          </TabsList>
+        <div className="flex h-12 min-w-0 shrink-0 items-center border-b px-2">
           <Button
-            className="ml-1 size-7 shrink-0"
+            className="mr-1 size-7 shrink-0"
             onClick={createSession}
             size="icon"
             variant="ghost"
           >
             <PlusIcon className="size-3.5" />
           </Button>
+          <TabsList className="gap-x-0 overflow-x-auto [scrollbar-width:none]" variant="underline">
+            {sessions.map((s, i) => (
+              <ContextMenu.Root key={s.id}>
+                <ContextMenu.Trigger className="contents">
+                  <TabsTab
+                    className="group grow-0 px-2"
+                    draggable
+                    onDragEnd={() => setDragOverIndex(null)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOverIndex(i);
+                    }}
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = 'move';
+                      e.dataTransfer.setData('text/plain', String(i));
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const fromIndex = Number(e.dataTransfer.getData('text/plain'));
+                      if (fromIndex !== i) {
+                        reorderSessions(fromIndex, i);
+                      }
+                      setDragOverIndex(null);
+                    }}
+                    onMouseDown={(e) => {
+                      if (e.button === 1) {
+                        e.preventDefault();
+                        removeSession(s.id);
+                      }
+                    }}
+                    value={s.id}
+                  >
+                    {dragOverIndex === i && (
+                      <div className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-primary" />
+                    )}
+                    <span className="truncate">{s.title}</span>
+                    <button
+                      className="absolute -top-1 -right-0.5 rounded-full bg-muted px-1 py-0.5 opacity-0 group-hover:opacity-100 hover:bg-accent"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeSession(s.id);
+                      }}
+                      type="button"
+                    >
+                      <XIcon className="size-2.5" />
+                    </button>
+                  </TabsTab>
+                </ContextMenu.Trigger>
+                <ContextMenu.Portal>
+                  <ContextMenu.Positioner className="z-50" sideOffset={4}>
+                    <ContextMenu.Popup className="min-w-40 rounded-lg border bg-popover p-1 shadow-lg/5">
+                      <MenuItem onClick={() => removeSession(s.id)}>Close</MenuItem>
+                      <MenuItem onClick={() => removeOtherSessions(s.id)}>Close Others</MenuItem>
+                      <MenuItem onClick={() => removeAllSessions()}>Close All</MenuItem>
+                      <MenuSeparator />
+                      <MenuItem onClick={() => removeSessionsToRight(s.id)}>
+                        Close Tabs to the Right
+                      </MenuItem>
+                    </ContextMenu.Popup>
+                  </ContextMenu.Positioner>
+                </ContextMenu.Portal>
+              </ContextMenu.Root>
+            ))}
+          </TabsList>
         </div>
         {sessions.map((s) => (
           <TabsPanel className="flex flex-1 flex-col" key={s.id} value={s.id}>
