@@ -47,16 +47,14 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="flex h-12 shrink-0 items-center border-b px-4">
-        <span className="text-sm font-semibold">{selectedAgent.name}</span>
-      </div>
       <Tabs
         className="flex flex-1 flex-col"
         onValueChange={(val) => selectSession(val as string)}
         value={selectedSession?.id}
       >
-        <div className="flex shrink-0 items-center border-b px-2">
-          <TabsList className="flex-1" variant="underline">
+        <div className="flex h-12 shrink-0 items-center border-b px-2">
+          <span className="shrink-0 px-2 text-sm font-semibold">{selectedAgent.name}</span>
+          <TabsList variant="underline">
             {sessions.map((s) => (
               <TabsTab key={s.id} value={s.id}>
                 <span className="truncate">{s.title || 'New session'}</span>
