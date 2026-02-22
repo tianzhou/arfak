@@ -7,7 +7,7 @@ import { MenuItem, MenuSeparator } from '@/components/ui/menu.js';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs.js';
 import { Textarea } from '@/components/ui/textarea.js';
 import { sendMessage, useMessages } from '@/hooks/use-messages.js';
-import { getDefaultSessionId, saveSelectedSession, useSessions } from '@/hooks/use-sessions.js';
+import { useSessions } from '@/hooks/use-sessions.js';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
@@ -16,6 +16,7 @@ export default function ChatPage() {
   const navigate = useNavigate();
   const {
     createSession,
+    loaded,
     removeAllSessions,
     removeOtherSessions,
     removeSession,
@@ -23,12 +24,13 @@ export default function ChatPage() {
     reorderSessions,
     sessions,
   } = useSessions(agentId);
+
   const { messages } = useMessages(agentId, sessionId);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Sync URL with available sessions
+  // Sync URL with available sessions (only after sessions are loaded)
   useEffect(() => {
-    if (!agentId) {
+    if (!agentId || !loaded) {
       return;
     }
     if (sessions.length === 0) {
@@ -38,19 +40,12 @@ export default function ChatPage() {
       return;
     }
     if (!sessionId || !sessions.some((s) => s.id === sessionId)) {
-      const defaultId = getDefaultSessionId(agentId, sessions);
-      if (defaultId) {
-        navigate(`/agents/${agentId}/sessions/${defaultId}`, { replace: true });
+      const lastSession = sessions.at(-1);
+      if (lastSession) {
+        navigate(`/agents/${agentId}/sessions/${lastSession.id}`, { replace: true });
       }
     }
-  }, [sessionId, sessions, agentId, navigate]);
-
-  // Persist selected session to localStorage
-  useEffect(() => {
-    if (agentId && sessionId) {
-      saveSelectedSession(agentId, sessionId);
-    }
-  }, [agentId, sessionId]);
+  }, [sessionId, sessions, loaded, agentId, navigate]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
