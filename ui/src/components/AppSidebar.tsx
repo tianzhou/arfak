@@ -19,7 +19,7 @@ export default function AppSidebar({ hasBanner }: { hasBanner?: boolean }) {
   const top = hasBanner ? '!top-[5.25rem]' : '!top-12';
   const height = hasBanner ? '!h-[calc(100svh-5.25rem)]' : '!h-[calc(100svh-3rem)]';
 
-  const { agents, selectedAgent, selectAgent } = useAgents();
+  const { agents } = useAgents();
 
   return (
     <Sidebar className={`${top} ${height}`}>
@@ -32,11 +32,8 @@ export default function AppSidebar({ hasBanner }: { hasBanner?: boolean }) {
                 {agents.map((agent) => (
                   <SidebarMenuItem key={agent.id}>
                     <SidebarMenuButton
-                      isActive={location.pathname === '/' && agent.id === selectedAgent?.id}
-                      onClick={() => {
-                        selectAgent(agent.id);
-                        navigate('/');
-                      }}
+                      isActive={location.pathname === `/agents/${agent.id}`}
+                      onClick={() => navigate(`/agents/${agent.id}`)}
                       tooltip={agent.name}
                     >
                       <span>{agent.name}</span>

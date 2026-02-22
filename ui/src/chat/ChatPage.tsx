@@ -1,18 +1,18 @@
 import { ContextMenu } from '@base-ui/react/context-menu';
 import { ArrowUpIcon, PlusIcon, XIcon } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router';
 import { Button } from '@/components/ui/button.js';
 import { MenuItem, MenuSeparator } from '@/components/ui/menu.js';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs.js';
 import { Textarea } from '@/components/ui/textarea.js';
-import { useAgents } from '@/hooks/use-agents.js';
 import { sendMessage, useMessages } from '@/hooks/use-messages.js';
 import { useSessions } from '@/hooks/use-sessions.js';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-  const { selectedAgent } = useAgents();
+  const { agentId } = useParams();
   const {
     createSession,
     removeAllSessions,
@@ -23,8 +23,8 @@ export default function ChatPage() {
     selectedSession,
     selectSession,
     sessions,
-  } = useSessions(selectedAgent?.id);
-  const { messages } = useMessages(selectedAgent?.id, selectedSession?.id);
+  } = useSessions(agentId);
+  const { messages } = useMessages(agentId, selectedSession?.id);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,12 +33,12 @@ export default function ChatPage() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!input.trim() || !selectedAgent || !selectedSession) {
+    if (!input.trim() || !agentId || !selectedSession) {
       return;
     }
     const content = input;
     setInput('');
-    await sendMessage(selectedAgent.id, selectedSession.id, content);
+    await sendMessage(agentId, selectedSession.id, content);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -48,7 +48,7 @@ export default function ChatPage() {
     }
   };
 
-  if (!selectedAgent) {
+  if (!agentId) {
     return (
       <div className="flex flex-1 items-center justify-center">
         <p className="text-sm text-muted-foreground">Select an agent to start chatting</p>

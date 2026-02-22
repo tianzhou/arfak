@@ -3,7 +3,7 @@ import { createPromiseClient } from '@connectrpc/connect';
 import { ArfakService } from '@gen/arfak/v1/service_connect.js';
 import { CheckIcon, ExternalLinkIcon, MonitorIcon, MoonIcon, SunIcon, ZapIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes } from 'react-router';
 import type { Mode } from './hooks/use-theme.js';
 import ChatPage from './chat/ChatPage.js';
 import AppSidebar from './components/AppSidebar.js';
@@ -11,6 +11,7 @@ import { Button } from './components/ui/button.js';
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from './components/ui/menu.js';
 import { SidebarInset, SidebarProvider } from './components/ui/sidebar.js';
 import { ToastProvider, toastManager } from './components/ui/toast.js';
+import { useAgents } from './hooks/use-agents.js';
 import { useTheme } from './hooks/use-theme.js';
 import { transport } from './lib/connect.js';
 import ModelsPage from './models/ModelsPage.js';
@@ -103,6 +104,16 @@ function Banner({ banner }: { banner: BannerConfig }) {
   );
 }
 
+function AgentRedirect() {
+  const { agents } = useAgents();
+
+  if (agents.length === 0) {
+    return null;
+  }
+
+  return <Navigate replace to={`/agents/${agents[0].id}`} />;
+}
+
 export default function App() {
   const [banner, setBanner] = useState<BannerConfig | null>(null);
 
@@ -128,7 +139,8 @@ export default function App() {
           <AppSidebar hasBanner={!!banner} />
           <SidebarInset>
             <Routes>
-              <Route element={<ChatPage />} path="/" />
+              <Route element={<AgentRedirect />} path="/" />
+              <Route element={<ChatPage />} path="/agents/:agentId" />
               <Route element={<ModelsPage />} path="/models" />
             </Routes>
           </SidebarInset>

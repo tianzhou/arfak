@@ -6,12 +6,7 @@ import { transport } from '@/lib/connect.js';
 
 const client = createPromiseClient(ArfakService, transport);
 
-interface AgentsState {
-  agents: Agent[];
-  selectedId: string | undefined;
-}
-
-let state: AgentsState = { agents: [], selectedId: undefined };
+let agents: Array<Agent> = [];
 let fetched = false;
 
 const listeners = new Set<() => void>();
@@ -24,11 +19,8 @@ function subscribe(listener: () => void) {
     client
       .listAgents({})
       .then((res) => {
-        state = {
-          agents: res.agents,
-          selectedId: res.agents[0]?.id,
-        };
-        notify();
+        agents = res.agents;
+        for (const l of listeners) l();
       })
       .catch((err: unknown) => console.warn('[ListAgents] Failed:', err));
   }
@@ -37,22 +29,10 @@ function subscribe(listener: () => void) {
 }
 
 function getSnapshot() {
-  return state;
-}
-
-function notify() {
-  for (const l of listeners) l();
-}
-
-function selectAgent(id: string) {
-  if (state.agents.some((a) => a.id === id)) {
-    state = { ...state, selectedId: id };
-    notify();
-  }
+  return agents;
 }
 
 export function useAgents() {
-  const { agents, selectedId } = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
-  const selectedAgent = agents.find((a) => a.id === selectedId);
-  return { agents, selectedAgent, selectAgent } as const;
+  const agents = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  return { agents } as const;
 }
