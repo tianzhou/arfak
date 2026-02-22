@@ -1,6 +1,7 @@
 import { ContextMenu } from '@base-ui/react/context-menu';
 import { ArrowUpIcon, PlusIcon, XIcon } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import Markdown from 'react-markdown';
 import { useNavigate, useParams } from 'react-router';
 import { Button } from '@/components/ui/button.js';
 import { MenuItem, MenuSeparator } from '@/components/ui/menu.js';
@@ -205,14 +206,19 @@ export default function ChatPage() {
                       }
                       key={msg.id}
                     >
-                      {msg.content ||
-                        (msg.role === 'assistant' && (
-                          <span className="inline-flex gap-1">
-                            <span className="size-1.5 animate-pulse rounded-full bg-current" />
-                            <span className="size-1.5 animate-pulse rounded-full bg-current [animation-delay:150ms]" />
-                            <span className="size-1.5 animate-pulse rounded-full bg-current [animation-delay:300ms]" />
-                          </span>
-                        ))}
+                      {msg.role === 'user' ? (
+                        msg.content
+                      ) : msg.content ? (
+                        <div className="prose prose-sm dark:prose-invert max-w-none break-words">
+                          <Markdown>{msg.content}</Markdown>
+                        </div>
+                      ) : (
+                        <span className="inline-flex gap-1">
+                          <span className="size-1.5 animate-pulse rounded-full bg-current" />
+                          <span className="size-1.5 animate-pulse rounded-full bg-current [animation-delay:150ms]" />
+                          <span className="size-1.5 animate-pulse rounded-full bg-current [animation-delay:300ms]" />
+                        </span>
+                      )}
                     </div>
                   ))
                 )}
