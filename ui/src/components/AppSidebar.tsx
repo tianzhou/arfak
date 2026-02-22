@@ -32,7 +32,7 @@ export default function AppSidebar({ hasBanner }: { hasBanner?: boolean }) {
                 {agents.map((agent) => (
                   <SidebarMenuItem key={agent.id}>
                     <SidebarMenuButton
-                      isActive={location.pathname === `/agents/${agent.id}`}
+                      isActive={location.pathname.startsWith(`/agents/${agent.id}`)}
                       onClick={() => navigate(`/agents/${agent.id}`)}
                       tooltip={agent.name}
                     >
