@@ -6,6 +6,33 @@ import { transport } from '@/lib/connect.js';
 
 const client = createPromiseClient(ArfakService, transport);
 
+const STORAGE_KEY = 'arfak-agents';
+
+function loadAgentSetting(agentId: string, key: string): string | undefined {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') as Record<
+      string,
+      Record<string, string>
+    >;
+    return data[agentId]?.[key];
+  } catch {
+    return undefined;
+  }
+}
+
+function saveAgentSetting(agentId: string, key: string, value: string) {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') as Record<
+      string,
+      Record<string, string>
+    >;
+    data[agentId] = { ...data[agentId], [key]: value };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {
+    // localStorage unavailable
+  }
+}
+
 interface SessionsState {
   agentId: string | undefined;
   selectedId: string | undefined;
@@ -26,6 +53,9 @@ function getSnapshot() {
 }
 
 function notify() {
+  if (state.agentId && state.selectedId) {
+    saveAgentSetting(state.agentId, 'selectedSessionId', state.selectedId);
+  }
   for (const l of listeners) {
     l();
   }
@@ -49,7 +79,9 @@ async function fetchSessions(agentId: string) {
         sessions: created.session ? [created.session] : [],
       };
     } else {
-      state = { agentId, selectedId: sessions.at(-1)?.id, sessions };
+      const saved = loadAgentSetting(agentId, 'selectedSessionId');
+      const selectedId = sessions.some((s) => s.id === saved) ? saved : sessions.at(-1)?.id;
+      state = { agentId, selectedId, sessions };
     }
     notify();
   } catch (error: unknown) {
