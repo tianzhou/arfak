@@ -1,3 +1,4 @@
+import { streamText, type ModelMessage } from 'ai';
 import {
   appendMessage,
   createSession,
@@ -5,6 +6,8 @@ import {
   listMessages,
   listSessions,
 } from '../lib/profile.js';
+import { composeSystemPrompt, createModelInstance } from './ai.js';
+import { getAgentConfig, getModelConfig } from './config.js';
 
 export const sessionHandlers = {
   async createSession(req: { agentId: string }) {
@@ -38,15 +41,41 @@ export const sessionHandlers = {
     return {};
   },
 
-  async sendMessage(req: { agentId: string; sessionId: string; role: string; content: string }) {
-    const msg = appendMessage(req.agentId, req.sessionId, req.role, req.content);
-    return {
+  async *streamChat(req: { agentId: string; sessionId: string; content: string }) {
+    appendMessage(req.agentId, req.sessionId, 'user', req.content);
+
+    const agentCfg = getAgentConfig(req.agentId);
+    if (!agentCfg) {
+      throw new Error(`Agent not found: ${req.agentId}`);
+    }
+    const modelCfg = getModelConfig(agentCfg.model);
+    if (!modelCfg) {
+      throw new Error(`Model not found: ${agentCfg.model}`);
+    }
+
+    const history = listMessages(req.agentId, req.sessionId);
+    const messages: ModelMessage[] = history.map((m) => ({
+      role: m.role as 'user' | 'assistant',
+      content: m.content,
+    }));
+
+    const system = composeSystemPrompt(req.agentId);
+    const model = createModelInstance(modelCfg);
+    const result = streamText({ messages, model, system: system || undefined });
+
+    for await (const chunk of result.textStream) {
+      yield { textDelta: chunk };
+    }
+
+    const fullText = await result.text;
+    const assistantMsg = appendMessage(req.agentId, req.sessionId, 'assistant', fullText);
+    yield {
       message: {
-        id: msg.id,
-        sessionId: msg.sessionId,
-        role: msg.role,
-        content: msg.content,
-        createdAt: msg.createdAt,
+        id: assistantMsg.id,
+        sessionId: assistantMsg.sessionId,
+        role: assistantMsg.role,
+        content: assistantMsg.content,
+        createdAt: assistantMsg.createdAt,
       },
     };
   },

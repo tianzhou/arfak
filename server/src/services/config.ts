@@ -20,7 +20,7 @@ const log = createSubsystemLogger('config');
 
 const configPath = path.join(getProfileDir(), 'arfak.toml');
 
-interface ModelConfig {
+export interface ModelConfig {
   id: string;
   name: string;
   vendor: string;
@@ -180,3 +180,11 @@ export const configHandlers = {
     };
   },
 };
+
+export function getModelConfig(modelId: string): ModelConfig | undefined {
+  return (config.models ?? []).find((m) => m.id === modelId);
+}
+
+export function getAgentConfig(agentId: string): AgentConfig | undefined {
+  return (config.agents ?? []).find((a) => a.id === agentId);
+}

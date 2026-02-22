@@ -21,8 +21,8 @@ import {
   ListSessionsResponse,
   PingRequest,
   PingResponse,
-  SendMessageRequest,
-  SendMessageResponse,
+  StreamChatRequest,
+  StreamChatResponse,
 } from './service_pb.js';
 
 /**
@@ -95,13 +95,13 @@ export const ArfakService = {
       kind: MethodKind.Unary,
     },
     /**
-     * @generated from rpc arfak.v1.ArfakService.SendMessage
+     * @generated from rpc arfak.v1.ArfakService.StreamChat
      */
-    sendMessage: {
-      name: 'SendMessage',
-      I: SendMessageRequest,
-      O: SendMessageResponse,
-      kind: MethodKind.Unary,
+    streamChat: {
+      name: 'StreamChat',
+      I: StreamChatRequest,
+      O: StreamChatResponse,
+      kind: MethodKind.ServerStreaming,
     },
     /**
      * @generated from rpc arfak.v1.ArfakService.ListMessages

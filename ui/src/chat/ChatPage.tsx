@@ -30,7 +30,7 @@ export default function ChatPage() {
 
   const { agents } = useAgents();
   const { models } = useModels();
-  const { messages } = useMessages(agentId, sessionId);
+  const { messages, pending } = useMessages(agentId, sessionId);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const agent = agents.find((a) => a.id === agentId);
@@ -69,7 +69,7 @@ export default function ChatPage() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!input.trim() || !agentId) {
+    if (!input.trim() || !agentId || pending) {
       return;
     }
     const content = input;
@@ -234,7 +234,7 @@ export default function ChatPage() {
           />
           <Button
             className="size-10 shrink-0 rounded-full"
-            disabled={!input.trim()}
+            disabled={!input.trim() || pending}
             size="icon"
             type="submit"
           >

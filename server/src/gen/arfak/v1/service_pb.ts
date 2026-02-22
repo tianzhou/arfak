@@ -981,9 +981,9 @@ export class DeleteSessionResponse extends Message<DeleteSessionResponse> {
 }
 
 /**
- * @generated from message arfak.v1.SendMessageRequest
+ * @generated from message arfak.v1.StreamChatRequest
  */
-export class SendMessageRequest extends Message<SendMessageRequest> {
+export class StreamChatRequest extends Message<StreamChatRequest> {
   /**
    * @generated from field: string agent_id = 1;
    */
@@ -995,92 +995,89 @@ export class SendMessageRequest extends Message<SendMessageRequest> {
   sessionId = '';
 
   /**
-   * @generated from field: string role = 3;
-   */
-  role = '';
-
-  /**
-   * @generated from field: string content = 4;
+   * @generated from field: string content = 3;
    */
   content = '';
 
-  constructor(data?: PartialMessage<SendMessageRequest>) {
+  constructor(data?: PartialMessage<StreamChatRequest>) {
     super();
     proto3.util.initPartial(data, this);
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = 'arfak.v1.SendMessageRequest';
+  static readonly typeName = 'arfak.v1.StreamChatRequest';
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: 'agent_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
     { no: 2, name: 'session_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: 'role', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: 'content', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: 'content', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
   ]);
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SendMessageRequest {
-    return new SendMessageRequest().fromBinary(bytes, options);
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): StreamChatRequest {
+    return new StreamChatRequest().fromBinary(bytes, options);
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): SendMessageRequest {
-    return new SendMessageRequest().fromJson(jsonValue, options);
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): StreamChatRequest {
+    return new StreamChatRequest().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): SendMessageRequest {
-    return new SendMessageRequest().fromJsonString(jsonString, options);
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): StreamChatRequest {
+    return new StreamChatRequest().fromJsonString(jsonString, options);
   }
 
   static equals(
-    a: SendMessageRequest | PlainMessage<SendMessageRequest> | undefined,
-    b: SendMessageRequest | PlainMessage<SendMessageRequest> | undefined,
+    a: StreamChatRequest | PlainMessage<StreamChatRequest> | undefined,
+    b: StreamChatRequest | PlainMessage<StreamChatRequest> | undefined,
   ): boolean {
-    return proto3.util.equals(SendMessageRequest, a, b);
+    return proto3.util.equals(StreamChatRequest, a, b);
   }
 }
 
 /**
- * @generated from message arfak.v1.SendMessageResponse
+ * @generated from message arfak.v1.StreamChatResponse
  */
-export class SendMessageResponse extends Message<SendMessageResponse> {
+export class StreamChatResponse extends Message<StreamChatResponse> {
   /**
-   * @generated from field: arfak.v1.ChatMessage message = 1;
+   * @generated from field: string text_delta = 1;
+   */
+  textDelta = '';
+
+  /**
+   * @generated from field: arfak.v1.ChatMessage message = 2;
    */
   message?: ChatMessage;
 
-  constructor(data?: PartialMessage<SendMessageResponse>) {
+  constructor(data?: PartialMessage<StreamChatResponse>) {
     super();
     proto3.util.initPartial(data, this);
   }
 
   static readonly runtime: typeof proto3 = proto3;
-  static readonly typeName = 'arfak.v1.SendMessageResponse';
+  static readonly typeName = 'arfak.v1.StreamChatResponse';
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: 'message', kind: 'message', T: ChatMessage },
+    { no: 1, name: 'text_delta', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'message', kind: 'message', T: ChatMessage },
   ]);
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SendMessageResponse {
-    return new SendMessageResponse().fromBinary(bytes, options);
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): StreamChatResponse {
+    return new StreamChatResponse().fromBinary(bytes, options);
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): SendMessageResponse {
-    return new SendMessageResponse().fromJson(jsonValue, options);
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): StreamChatResponse {
+    return new StreamChatResponse().fromJson(jsonValue, options);
   }
 
   static fromJsonString(
     jsonString: string,
     options?: Partial<JsonReadOptions>,
-  ): SendMessageResponse {
-    return new SendMessageResponse().fromJsonString(jsonString, options);
+  ): StreamChatResponse {
+    return new StreamChatResponse().fromJsonString(jsonString, options);
   }
 
   static equals(
-    a: SendMessageResponse | PlainMessage<SendMessageResponse> | undefined,
-    b: SendMessageResponse | PlainMessage<SendMessageResponse> | undefined,
+    a: StreamChatResponse | PlainMessage<StreamChatResponse> | undefined,
+    b: StreamChatResponse | PlainMessage<StreamChatResponse> | undefined,
   ): boolean {
-    return proto3.util.equals(SendMessageResponse, a, b);
+    return proto3.util.equals(StreamChatResponse, a, b);
   }
 }
 

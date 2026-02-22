@@ -10,7 +10,7 @@ service ArfakService {
   rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
   rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
   rpc DeleteSession(DeleteSessionRequest) returns (DeleteSessionResponse);
-  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  rpc StreamChat(StreamChatRequest) returns (stream StreamChatResponse);
   rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
 }
 
@@ -110,15 +110,15 @@ message DeleteSessionRequest {
 
 message DeleteSessionResponse {}
 
-message SendMessageRequest {
+message StreamChatRequest {
   string agent_id = 1;
   string session_id = 2;
-  string role = 3;
-  string content = 4;
+  string content = 3;
 }
 
-message SendMessageResponse {
-  ChatMessage message = 1;
+message StreamChatResponse {
+  string text_delta = 1;
+  ChatMessage message = 2;
 }
 
 message ListMessagesRequest {

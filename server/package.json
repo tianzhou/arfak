@@ -10,9 +10,13 @@
     "tsc:check": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.46",
+    "@ai-sdk/google": "^3.0.30",
+    "@ai-sdk/openai": "^3.0.30",
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.7.0",
     "@connectrpc/connect-node": "^1.7.0",
+    "ai": "^6.0.97",
     "chokidar": "^5.0.0",
     "smol-toml": "^1.6.0",
     "uuidv7": "^1.1.0"
