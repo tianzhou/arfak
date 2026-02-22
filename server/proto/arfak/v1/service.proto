@@ -7,6 +7,11 @@ service ArfakService {
   rpc GetConfig(GetConfigRequest) returns (GetConfigResponse);
   rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
   rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+  rpc DeleteSession(DeleteSessionRequest) returns (DeleteSessionResponse);
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
 }
 
 message PingRequest {}
@@ -64,4 +69,63 @@ message Agent {
   repeated MemoryEntry memory = 5;
   string rules = 6;
   repeated KnowledgeEntry knowledge = 7;
+}
+
+message Session {
+  string id = 1;
+  string agent_id = 2;
+  string title = 3;
+  string created_at = 4;
+  string updated_at = 5;
+}
+
+message ChatMessage {
+  string id = 1;
+  string session_id = 2;
+  string role = 3;
+  string content = 4;
+  string created_at = 5;
+}
+
+message CreateSessionRequest {
+  string agent_id = 1;
+}
+
+message CreateSessionResponse {
+  Session session = 1;
+}
+
+message ListSessionsRequest {
+  string agent_id = 1;
+}
+
+message ListSessionsResponse {
+  repeated Session sessions = 1;
+}
+
+message DeleteSessionRequest {
+  string agent_id = 1;
+  string session_id = 2;
+}
+
+message DeleteSessionResponse {}
+
+message SendMessageRequest {
+  string agent_id = 1;
+  string session_id = 2;
+  string role = 3;
+  string content = 4;
+}
+
+message SendMessageResponse {
+  ChatMessage message = 1;
+}
+
+message ListMessagesRequest {
+  string agent_id = 1;
+  string session_id = 2;
+}
+
+message ListMessagesResponse {
+  repeated ChatMessage messages = 1;
 }

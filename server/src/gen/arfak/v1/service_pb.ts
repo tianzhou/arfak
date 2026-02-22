@@ -588,3 +588,590 @@ export class Agent extends Message<Agent> {
     return proto3.util.equals(Agent, a, b);
   }
 }
+
+/**
+ * @generated from message arfak.v1.Session
+ */
+export class Session extends Message<Session> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = '';
+
+  /**
+   * @generated from field: string agent_id = 2;
+   */
+  agentId = '';
+
+  /**
+   * @generated from field: string title = 3;
+   */
+  title = '';
+
+  /**
+   * @generated from field: string created_at = 4;
+   */
+  createdAt = '';
+
+  /**
+   * @generated from field: string updated_at = 5;
+   */
+  updatedAt = '';
+
+  constructor(data?: PartialMessage<Session>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.Session';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'agent_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: 'title', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: 'created_at', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: 'updated_at', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Session {
+    return new Session().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Session {
+    return new Session().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Session {
+    return new Session().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: Session | PlainMessage<Session> | undefined,
+    b: Session | PlainMessage<Session> | undefined,
+  ): boolean {
+    return proto3.util.equals(Session, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.ChatMessage
+ */
+export class ChatMessage extends Message<ChatMessage> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = '';
+
+  /**
+   * @generated from field: string session_id = 2;
+   */
+  sessionId = '';
+
+  /**
+   * @generated from field: string role = 3;
+   */
+  role = '';
+
+  /**
+   * @generated from field: string content = 4;
+   */
+  content = '';
+
+  /**
+   * @generated from field: string created_at = 5;
+   */
+  createdAt = '';
+
+  constructor(data?: PartialMessage<ChatMessage>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.ChatMessage';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'session_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: 'role', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: 'content', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: 'created_at', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ChatMessage {
+    return new ChatMessage().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ChatMessage {
+    return new ChatMessage().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ChatMessage {
+    return new ChatMessage().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: ChatMessage | PlainMessage<ChatMessage> | undefined,
+    b: ChatMessage | PlainMessage<ChatMessage> | undefined,
+  ): boolean {
+    return proto3.util.equals(ChatMessage, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.CreateSessionRequest
+ */
+export class CreateSessionRequest extends Message<CreateSessionRequest> {
+  /**
+   * @generated from field: string agent_id = 1;
+   */
+  agentId = '';
+
+  constructor(data?: PartialMessage<CreateSessionRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.CreateSessionRequest';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'agent_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateSessionRequest {
+    return new CreateSessionRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateSessionRequest {
+    return new CreateSessionRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): CreateSessionRequest {
+    return new CreateSessionRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: CreateSessionRequest | PlainMessage<CreateSessionRequest> | undefined,
+    b: CreateSessionRequest | PlainMessage<CreateSessionRequest> | undefined,
+  ): boolean {
+    return proto3.util.equals(CreateSessionRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.CreateSessionResponse
+ */
+export class CreateSessionResponse extends Message<CreateSessionResponse> {
+  /**
+   * @generated from field: arfak.v1.Session session = 1;
+   */
+  session?: Session;
+
+  constructor(data?: PartialMessage<CreateSessionResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.CreateSessionResponse';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'session', kind: 'message', T: Session },
+  ]);
+
+  static fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>,
+  ): CreateSessionResponse {
+    return new CreateSessionResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateSessionResponse {
+    return new CreateSessionResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): CreateSessionResponse {
+    return new CreateSessionResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: CreateSessionResponse | PlainMessage<CreateSessionResponse> | undefined,
+    b: CreateSessionResponse | PlainMessage<CreateSessionResponse> | undefined,
+  ): boolean {
+    return proto3.util.equals(CreateSessionResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.ListSessionsRequest
+ */
+export class ListSessionsRequest extends Message<ListSessionsRequest> {
+  /**
+   * @generated from field: string agent_id = 1;
+   */
+  agentId = '';
+
+  constructor(data?: PartialMessage<ListSessionsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.ListSessionsRequest';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'agent_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListSessionsRequest {
+    return new ListSessionsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListSessionsRequest {
+    return new ListSessionsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): ListSessionsRequest {
+    return new ListSessionsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: ListSessionsRequest | PlainMessage<ListSessionsRequest> | undefined,
+    b: ListSessionsRequest | PlainMessage<ListSessionsRequest> | undefined,
+  ): boolean {
+    return proto3.util.equals(ListSessionsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.ListSessionsResponse
+ */
+export class ListSessionsResponse extends Message<ListSessionsResponse> {
+  /**
+   * @generated from field: repeated arfak.v1.Session sessions = 1;
+   */
+  sessions: Session[] = [];
+
+  constructor(data?: PartialMessage<ListSessionsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.ListSessionsResponse';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'sessions', kind: 'message', T: Session, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListSessionsResponse {
+    return new ListSessionsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListSessionsResponse {
+    return new ListSessionsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): ListSessionsResponse {
+    return new ListSessionsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: ListSessionsResponse | PlainMessage<ListSessionsResponse> | undefined,
+    b: ListSessionsResponse | PlainMessage<ListSessionsResponse> | undefined,
+  ): boolean {
+    return proto3.util.equals(ListSessionsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.DeleteSessionRequest
+ */
+export class DeleteSessionRequest extends Message<DeleteSessionRequest> {
+  /**
+   * @generated from field: string agent_id = 1;
+   */
+  agentId = '';
+
+  /**
+   * @generated from field: string session_id = 2;
+   */
+  sessionId = '';
+
+  constructor(data?: PartialMessage<DeleteSessionRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.DeleteSessionRequest';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'agent_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'session_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DeleteSessionRequest {
+    return new DeleteSessionRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): DeleteSessionRequest {
+    return new DeleteSessionRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): DeleteSessionRequest {
+    return new DeleteSessionRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: DeleteSessionRequest | PlainMessage<DeleteSessionRequest> | undefined,
+    b: DeleteSessionRequest | PlainMessage<DeleteSessionRequest> | undefined,
+  ): boolean {
+    return proto3.util.equals(DeleteSessionRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.DeleteSessionResponse
+ */
+export class DeleteSessionResponse extends Message<DeleteSessionResponse> {
+  constructor(data?: PartialMessage<DeleteSessionResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.DeleteSessionResponse';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => []);
+
+  static fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>,
+  ): DeleteSessionResponse {
+    return new DeleteSessionResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): DeleteSessionResponse {
+    return new DeleteSessionResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): DeleteSessionResponse {
+    return new DeleteSessionResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: DeleteSessionResponse | PlainMessage<DeleteSessionResponse> | undefined,
+    b: DeleteSessionResponse | PlainMessage<DeleteSessionResponse> | undefined,
+  ): boolean {
+    return proto3.util.equals(DeleteSessionResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.SendMessageRequest
+ */
+export class SendMessageRequest extends Message<SendMessageRequest> {
+  /**
+   * @generated from field: string agent_id = 1;
+   */
+  agentId = '';
+
+  /**
+   * @generated from field: string session_id = 2;
+   */
+  sessionId = '';
+
+  /**
+   * @generated from field: string role = 3;
+   */
+  role = '';
+
+  /**
+   * @generated from field: string content = 4;
+   */
+  content = '';
+
+  constructor(data?: PartialMessage<SendMessageRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.SendMessageRequest';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'agent_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'session_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: 'role', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: 'content', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SendMessageRequest {
+    return new SendMessageRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): SendMessageRequest {
+    return new SendMessageRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): SendMessageRequest {
+    return new SendMessageRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: SendMessageRequest | PlainMessage<SendMessageRequest> | undefined,
+    b: SendMessageRequest | PlainMessage<SendMessageRequest> | undefined,
+  ): boolean {
+    return proto3.util.equals(SendMessageRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.SendMessageResponse
+ */
+export class SendMessageResponse extends Message<SendMessageResponse> {
+  /**
+   * @generated from field: arfak.v1.ChatMessage message = 1;
+   */
+  message?: ChatMessage;
+
+  constructor(data?: PartialMessage<SendMessageResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.SendMessageResponse';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'message', kind: 'message', T: ChatMessage },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SendMessageResponse {
+    return new SendMessageResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): SendMessageResponse {
+    return new SendMessageResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): SendMessageResponse {
+    return new SendMessageResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: SendMessageResponse | PlainMessage<SendMessageResponse> | undefined,
+    b: SendMessageResponse | PlainMessage<SendMessageResponse> | undefined,
+  ): boolean {
+    return proto3.util.equals(SendMessageResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.ListMessagesRequest
+ */
+export class ListMessagesRequest extends Message<ListMessagesRequest> {
+  /**
+   * @generated from field: string agent_id = 1;
+   */
+  agentId = '';
+
+  /**
+   * @generated from field: string session_id = 2;
+   */
+  sessionId = '';
+
+  constructor(data?: PartialMessage<ListMessagesRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.ListMessagesRequest';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'agent_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: 'session_id', kind: 'scalar', T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListMessagesRequest {
+    return new ListMessagesRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListMessagesRequest {
+    return new ListMessagesRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): ListMessagesRequest {
+    return new ListMessagesRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: ListMessagesRequest | PlainMessage<ListMessagesRequest> | undefined,
+    b: ListMessagesRequest | PlainMessage<ListMessagesRequest> | undefined,
+  ): boolean {
+    return proto3.util.equals(ListMessagesRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message arfak.v1.ListMessagesResponse
+ */
+export class ListMessagesResponse extends Message<ListMessagesResponse> {
+  /**
+   * @generated from field: repeated arfak.v1.ChatMessage messages = 1;
+   */
+  messages: ChatMessage[] = [];
+
+  constructor(data?: PartialMessage<ListMessagesResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = 'arfak.v1.ListMessagesResponse';
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: 'messages', kind: 'message', T: ChatMessage, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListMessagesResponse {
+    return new ListMessagesResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListMessagesResponse {
+    return new ListMessagesResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): ListMessagesResponse {
+    return new ListMessagesResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(
+    a: ListMessagesResponse | PlainMessage<ListMessagesResponse> | undefined,
+    b: ListMessagesResponse | PlainMessage<ListMessagesResponse> | undefined,
+  ): boolean {
+    return proto3.util.equals(ListMessagesResponse, a, b);
+  }
+}

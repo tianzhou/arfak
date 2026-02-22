@@ -5,14 +5,24 @@
 
 import { MethodKind } from '@bufbuild/protobuf';
 import {
+  CreateSessionRequest,
+  CreateSessionResponse,
+  DeleteSessionRequest,
+  DeleteSessionResponse,
   GetConfigRequest,
   GetConfigResponse,
   ListAgentsRequest,
   ListAgentsResponse,
+  ListMessagesRequest,
+  ListMessagesResponse,
   ListModelsRequest,
   ListModelsResponse,
+  ListSessionsRequest,
+  ListSessionsResponse,
   PingRequest,
   PingResponse,
+  SendMessageRequest,
+  SendMessageResponse,
 } from './service_pb.js';
 
 /**
@@ -55,6 +65,51 @@ export const ArfakService = {
       name: 'ListAgents',
       I: ListAgentsRequest,
       O: ListAgentsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc arfak.v1.ArfakService.CreateSession
+     */
+    createSession: {
+      name: 'CreateSession',
+      I: CreateSessionRequest,
+      O: CreateSessionResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc arfak.v1.ArfakService.ListSessions
+     */
+    listSessions: {
+      name: 'ListSessions',
+      I: ListSessionsRequest,
+      O: ListSessionsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc arfak.v1.ArfakService.DeleteSession
+     */
+    deleteSession: {
+      name: 'DeleteSession',
+      I: DeleteSessionRequest,
+      O: DeleteSessionResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc arfak.v1.ArfakService.SendMessage
+     */
+    sendMessage: {
+      name: 'SendMessage',
+      I: SendMessageRequest,
+      O: SendMessageResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc arfak.v1.ArfakService.ListMessages
+     */
+    listMessages: {
+      name: 'ListMessages',
+      I: ListMessagesRequest,
+      O: ListMessagesResponse,
       kind: MethodKind.Unary,
     },
   },
