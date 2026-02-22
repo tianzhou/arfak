@@ -1,20 +1,7 @@
-import type { Model } from '@gen/arfak/v1/service_pb.js';
-import { createPromiseClient } from '@connectrpc/connect';
-import { ArfakService } from '@gen/arfak/v1/service_connect.js';
-import { useEffect, useState } from 'react';
-import { transport } from '@/lib/connect.js';
-
-const client = createPromiseClient(ArfakService, transport);
+import { useModels } from '@/hooks/use-models.js';
 
 export default function ModelsPage() {
-  const [models, setModels] = useState<Model[]>([]);
-
-  useEffect(() => {
-    client
-      .listModels({})
-      .then((res) => setModels(res.models))
-      .catch((err: unknown) => console.warn('[ListModels] Failed:', err));
-  }, []);
+  const { models } = useModels();
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto p-6">

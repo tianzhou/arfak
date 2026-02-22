@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button.js';
 import { MenuItem, MenuSeparator } from '@/components/ui/menu.js';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs.js';
 import { Textarea } from '@/components/ui/textarea.js';
+import { useAgents } from '@/hooks/use-agents.js';
 import { sendMessage, useMessages } from '@/hooks/use-messages.js';
+import { useModels } from '@/hooks/use-models.js';
 import { useSessions } from '@/hooks/use-sessions.js';
 import { getLastSessionId, saveLastSessionId } from '@/lib/utils.js';
 
@@ -26,8 +28,13 @@ export default function ChatPage() {
     sessions,
   } = useSessions(agentId);
 
+  const { agents } = useAgents();
+  const { models } = useModels();
   const { messages } = useMessages(agentId, sessionId);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const agent = agents.find((a) => a.id === agentId);
+  const model = models.find((m) => m.id === agent?.model);
 
   // Persist last selected session per agent
   useEffect(() => {
@@ -216,6 +223,13 @@ export default function ChatPage() {
             onKeyDown={handleKeyDown}
             placeholder="Message..."
             rows={1}
+            startAddon={
+              model && (
+                <span className="ml-2 inline-flex shrink-0 items-center rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                  {model.name}
+                </span>
+              )
+            }
             value={input}
           />
           <Button
