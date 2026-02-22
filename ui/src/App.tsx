@@ -1,19 +1,11 @@
 import type { BannerConfig } from '@gen/arfak/v1/service_pb.js';
 import { createPromiseClient } from '@connectrpc/connect';
 import { ArfakService } from '@gen/arfak/v1/service_connect.js';
-import {
-  CheckIcon,
-  ExternalLinkIcon,
-  MonitorIcon,
-  MoonIcon,
-  SunIcon,
-  ZapIcon,
-} from 'lucide-react';
+import { CheckIcon, ExternalLinkIcon, MonitorIcon, MoonIcon, SunIcon, ZapIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
 import type { Mode } from './hooks/use-theme.js';
 import ChatPage from './chat/ChatPage.js';
-import ModelsPage from './models/ModelsPage.js';
 import AppSidebar from './components/AppSidebar.js';
 import { Button } from './components/ui/button.js';
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from './components/ui/menu.js';
@@ -21,6 +13,7 @@ import { SidebarInset, SidebarProvider } from './components/ui/sidebar.js';
 import { ToastProvider, toastManager } from './components/ui/toast.js';
 import { useTheme } from './hooks/use-theme.js';
 import { transport } from './lib/connect.js';
+import ModelsPage from './models/ModelsPage.js';
 
 const MODES: { value: Mode; label: string; icon: typeof SunIcon }[] = [
   { value: 'light', label: 'Light', icon: SunIcon },

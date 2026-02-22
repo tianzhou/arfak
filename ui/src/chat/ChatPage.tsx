@@ -1,10 +1,18 @@
 import { SendIcon } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { Button } from '@/components/ui/button.js';
-import { Textarea } from '@/components/ui/textarea.js';
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select.js';
+import { useAgents } from '@/hooks/use-agents.js';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
+  const { agents, selectedAgent, selectAgent } = useAgents();
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -27,18 +35,43 @@ export default function ChatPage() {
         </div>
       </div>
       <div className="border-t p-4">
-        <form className="mx-auto flex max-w-2xl items-end gap-2" onSubmit={handleSubmit}>
-          <Textarea
-            className="min-h-[40px] flex-1 resize-none"
+        <form
+          className="mx-auto flex max-w-2xl flex-col rounded-xl border bg-background shadow-xs"
+          onSubmit={handleSubmit}
+        >
+          <textarea
+            className="field-sizing-content w-full resize-none overflow-hidden bg-transparent px-3 pt-3 pb-6 text-sm outline-none placeholder:text-muted-foreground"
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
-            rows={1}
+            placeholder={
+              selectedAgent ? `Send message to ${selectedAgent.name}...` : 'Type a message...'
+            }
             value={input}
           />
-          <Button disabled={!input.trim()} size="icon" type="submit">
-            <SendIcon className="size-4" />
-          </Button>
+          <div className="flex items-center justify-between px-3 pb-2">
+            {agents.length > 0 && (
+              <Select
+                value={selectedAgent?.id ?? null}
+                onValueChange={(value) => {
+                  if (value) selectAgent(value);
+                }}
+              >
+                <SelectTrigger className="w-auto min-w-0" size="sm">
+                  <SelectValue placeholder="Agent" />
+                </SelectTrigger>
+                <SelectPopup>
+                  {agents.map((agent) => (
+                    <SelectItem key={agent.id} value={agent.id}>
+                      {agent.name}
+                    </SelectItem>
+                  ))}
+                </SelectPopup>
+              </Select>
+            )}
+            <Button disabled={!input.trim()} size="icon" type="submit">
+              <SendIcon className="size-4" />
+            </Button>
+          </div>
         </form>
       </div>
     </div>

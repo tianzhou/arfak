@@ -1,8 +1,4 @@
-import type { Agent } from '@gen/arfak/v1/service_pb.js';
-import { createPromiseClient } from '@connectrpc/connect';
-import { ArfakService } from '@gen/arfak/v1/service_connect.js';
 import { BoxIcon, MessageCircleIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
   Sidebar,
@@ -15,28 +11,19 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from '@/components/ui/sidebar.js';
-import { transport } from '@/lib/connect.js';
+import { useAgents } from '@/hooks/use-agents.js';
 
 const NAV_ITEMS = [
   { icon: MessageCircleIcon, label: 'Chat', path: '/' },
   { icon: BoxIcon, label: 'Models', path: '/models' },
 ];
 
-const client = createPromiseClient(ArfakService, transport);
-
 export default function AppSidebar({ hasBanner }: { hasBanner?: boolean }) {
   const location = useLocation();
   const top = hasBanner ? '!top-[5.25rem]' : '!top-12';
   const height = hasBanner ? '!h-[calc(100svh-5.25rem)]' : '!h-[calc(100svh-3rem)]';
 
-  const [agents, setAgents] = useState<Agent[]>([]);
-
-  useEffect(() => {
-    client
-      .listAgents({})
-      .then((res) => setAgents(res.agents))
-      .catch((err: unknown) => console.warn('[ListAgents] Failed:', err));
-  }, []);
+  const { agents, selectedAgent, selectAgent } = useAgents();
 
   return (
     <Sidebar className={`${top} ${height}`}>
@@ -68,7 +55,11 @@ export default function AppSidebar({ hasBanner }: { hasBanner?: boolean }) {
                 <SidebarMenu>
                   {agents.map((agent) => (
                     <SidebarMenuItem key={agent.id}>
-                      <SidebarMenuButton tooltip={agent.name}>
+                      <SidebarMenuButton
+                        isActive={agent.id === selectedAgent?.id}
+                        onClick={() => selectAgent(agent.id)}
+                        tooltip={agent.name}
+                      >
                         <span>{agent.name}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
