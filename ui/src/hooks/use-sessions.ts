@@ -35,11 +35,10 @@ function saveAgentSetting(agentId: string, key: string, value: string) {
 
 interface SessionsState {
   agentId: string | undefined;
-  selectedId: string | undefined;
   sessions: Array<Session>;
 }
 
-let state: SessionsState = { agentId: undefined, selectedId: undefined, sessions: [] };
+let state: SessionsState = { agentId: undefined, sessions: [] };
 
 const listeners = new Set<() => void>();
 
@@ -53,9 +52,6 @@ function getSnapshot() {
 }
 
 function notify() {
-  if (state.agentId && state.selectedId) {
-    saveAgentSetting(state.agentId, 'selectedSessionId', state.selectedId);
-  }
   for (const l of listeners) {
     l();
   }
@@ -75,13 +71,10 @@ async function fetchSessions(agentId: string) {
       }
       state = {
         agentId,
-        selectedId: created.session?.id,
         sessions: created.session ? [created.session] : [],
       };
     } else {
-      const saved = loadAgentSetting(agentId, 'selectedSessionId');
-      const selectedId = sessions.some((s) => s.id === saved) ? saved : sessions.at(-1)?.id;
-      state = { agentId, selectedId, sessions };
+      state = { agentId, sessions };
     }
     notify();
   } catch (error: unknown) {
@@ -89,27 +82,21 @@ async function fetchSessions(agentId: string) {
   }
 }
 
-function selectSession(id: string) {
-  if (state.sessions.some((s) => s.id === id)) {
-    state = { ...state, selectedId: id };
-    notify();
-  }
-}
-
-async function createSession(agentId: string) {
+async function createSession(agentId: string): Promise<string | undefined> {
   try {
     const res = await client.createSession({ agentId });
     if (!res.session) {
-      return;
+      return undefined;
     }
     state = {
       agentId,
-      selectedId: res.session.id,
       sessions: [...state.sessions, res.session],
     };
     notify();
+    return res.session.id;
   } catch (error: unknown) {
     console.warn('[CreateSession] Failed:', error);
+    return undefined;
   }
 }
 
@@ -117,11 +104,7 @@ async function removeSession(agentId: string, sessionId: string) {
   try {
     await client.deleteSession({ agentId, sessionId });
     const remaining = state.sessions.filter((s) => s.id !== sessionId);
-    state = {
-      agentId,
-      selectedId: state.selectedId === sessionId ? remaining.at(-1)?.id : state.selectedId,
-      sessions: remaining,
-    };
+    state = { agentId, sessions: remaining };
     notify();
   } catch (error: unknown) {
     console.warn('[DeleteSession] Failed:', error);
@@ -153,7 +136,6 @@ async function removeOtherSessions(agentId: string, keepSessionId: string) {
   );
   state = {
     agentId,
-    selectedId: keepSessionId,
     sessions: state.sessions.filter((s) => s.id === keepSessionId),
   };
   notify();
@@ -165,7 +147,6 @@ async function removeAllSessions(agentId: string) {
     const res = await client.createSession({ agentId });
     state = {
       agentId,
-      selectedId: res.session?.id,
       sessions: res.session ? [res.session] : [],
     };
     notify();
@@ -181,14 +162,17 @@ async function removeSessionsToRight(agentId: string, sessionId: string) {
   }
   await deleteSessions(agentId, state.sessions.slice(idx + 1));
   const remaining = state.sessions.slice(0, idx + 1);
-  state = {
-    agentId,
-    selectedId: remaining.some((s) => s.id === state.selectedId)
-      ? state.selectedId
-      : remaining.at(-1)?.id,
-    sessions: remaining,
-  };
+  state = { agentId, sessions: remaining };
   notify();
+}
+
+export function getDefaultSessionId(agentId: string, sessions: Array<Session>): string | undefined {
+  const saved = loadAgentSetting(agentId, 'selectedSessionId');
+  return sessions.some((s) => s.id === saved) ? saved : sessions.at(-1)?.id;
+}
+
+export function saveSelectedSession(agentId: string, sessionId: string) {
+  saveAgentSetting(agentId, 'selectedSessionId', sessionId);
 }
 
 export function useSessions(agentId: string | undefined) {
@@ -199,25 +183,28 @@ export function useSessions(agentId: string | undefined) {
       return;
     }
     if (snap.agentId !== agentId) {
-      state = { agentId, selectedId: undefined, sessions: [] };
+      state = { agentId, sessions: [] };
       notify();
       fetchSessions(agentId);
     }
   }, [agentId, snap.agentId]);
 
-  const selectedSession = snap.sessions.find((s) => s.id === snap.selectedId);
-
   return {
-    createSession: () => agentId && createSession(agentId),
-    removeAllSessions: () => agentId && removeAllSessions(agentId),
-    removeOtherSessions: (keepSessionId: string) =>
-      agentId && removeOtherSessions(agentId, keepSessionId),
-    removeSession: (sessionId: string) => agentId && removeSession(agentId, sessionId),
-    removeSessionsToRight: (sessionId: string) =>
-      agentId && removeSessionsToRight(agentId, sessionId),
+    createSession: (): Promise<string | undefined> =>
+      agentId ? createSession(agentId) : Promise.resolve(undefined),
+    removeAllSessions: () => {
+      if (agentId) removeAllSessions(agentId);
+    },
+    removeOtherSessions: (keepSessionId: string) => {
+      if (agentId) removeOtherSessions(agentId, keepSessionId);
+    },
+    removeSession: (sessionId: string) => {
+      if (agentId) removeSession(agentId, sessionId);
+    },
+    removeSessionsToRight: (sessionId: string) => {
+      if (agentId) removeSessionsToRight(agentId, sessionId);
+    },
     reorderSessions,
-    selectedSession,
-    selectSession,
     sessions: snap.sessions,
   } as const;
 }

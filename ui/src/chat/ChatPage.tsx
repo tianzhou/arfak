@@ -1,18 +1,19 @@
 import { ContextMenu } from '@base-ui/react/context-menu';
 import { ArrowUpIcon, PlusIcon, XIcon } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Button } from '@/components/ui/button.js';
 import { MenuItem, MenuSeparator } from '@/components/ui/menu.js';
 import { Tabs, TabsList, TabsPanel, TabsTab } from '@/components/ui/tabs.js';
 import { Textarea } from '@/components/ui/textarea.js';
 import { sendMessage, useMessages } from '@/hooks/use-messages.js';
-import { useSessions } from '@/hooks/use-sessions.js';
+import { getDefaultSessionId, saveSelectedSession, useSessions } from '@/hooks/use-sessions.js';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-  const { agentId } = useParams();
+  const { agentId, sessionId } = useParams();
+  const navigate = useNavigate();
   const {
     createSession,
     removeAllSessions,
@@ -20,12 +21,30 @@ export default function ChatPage() {
     removeSession,
     removeSessionsToRight,
     reorderSessions,
-    selectedSession,
-    selectSession,
     sessions,
   } = useSessions(agentId);
-  const { messages } = useMessages(agentId, selectedSession?.id);
+  const { messages } = useMessages(agentId, sessionId);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Redirect to default session when no sessionId or current session not found
+  useEffect(() => {
+    if (sessions.length === 0 || !agentId) {
+      return;
+    }
+    if (!sessionId || !sessions.some((s) => s.id === sessionId)) {
+      const defaultId = getDefaultSessionId(agentId, sessions);
+      if (defaultId) {
+        navigate(`/agents/${agentId}/sessions/${defaultId}`, { replace: true });
+      }
+    }
+  }, [sessionId, sessions, agentId, navigate]);
+
+  // Persist selected session to localStorage
+  useEffect(() => {
+    if (agentId && sessionId) {
+      saveSelectedSession(agentId, sessionId);
+    }
+  }, [agentId, sessionId]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,18 +52,25 @@ export default function ChatPage() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!input.trim() || !agentId || !selectedSession) {
+    if (!input.trim() || !agentId || !sessionId) {
       return;
     }
     const content = input;
     setInput('');
-    await sendMessage(agentId, selectedSession.id, content);
+    await sendMessage(agentId, sessionId, content);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       handleSubmit(event);
+    }
+  };
+
+  const handleCreate = async () => {
+    const newId = await createSession();
+    if (newId && agentId) {
+      navigate(`/agents/${agentId}/sessions/${newId}`);
     }
   };
 
@@ -60,13 +86,13 @@ export default function ChatPage() {
     <div className="flex flex-1 flex-col">
       <Tabs
         className="flex flex-1 flex-col"
-        onValueChange={(val) => selectSession(val as string)}
-        value={selectedSession?.id}
+        onValueChange={(val) => navigate(`/agents/${agentId}/sessions/${val}`)}
+        value={sessionId}
       >
         <div className="flex h-12 min-w-0 shrink-0 items-center border-b px-2">
           <Button
             className="mr-1 size-7 shrink-0"
-            onClick={createSession}
+            onClick={handleCreate}
             size="icon"
             variant="ghost"
           >

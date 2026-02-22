@@ -141,6 +141,7 @@ export default function App() {
             <Routes>
               <Route element={<AgentRedirect />} path="/" />
               <Route element={<ChatPage />} path="/agents/:agentId" />
+              <Route element={<ChatPage />} path="/agents/:agentId/sessions/:sessionId" />
               <Route element={<ModelsPage />} path="/models" />
             </Routes>
           </SidebarInset>
