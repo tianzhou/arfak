@@ -58,12 +58,21 @@ export default function ChatPage() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!input.trim() || !agentId || !sessionId) {
+    if (!input.trim() || !agentId) {
       return;
     }
     const content = input;
     setInput('');
-    await sendMessage(agentId, sessionId, content);
+    let targetSessionId = sessionId;
+    if (!targetSessionId) {
+      targetSessionId = await createSession();
+      if (targetSessionId) {
+        navigate(`/agents/${agentId}/sessions/${targetSessionId}`);
+      }
+    }
+    if (targetSessionId) {
+      await sendMessage(agentId, targetSessionId, content);
+    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
