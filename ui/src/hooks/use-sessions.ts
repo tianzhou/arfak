@@ -7,12 +7,12 @@ import { transport } from '@/lib/connect.js';
 const client = createPromiseClient(ArfakService, transport);
 
 interface SessionsState {
-  sessions: Session[];
-  selectedId: string | undefined;
   agentId: string | undefined;
+  selectedId: string | undefined;
+  sessions: Array<Session>;
 }
 
-let state: SessionsState = { sessions: [], selectedId: undefined, agentId: undefined };
+let state: SessionsState = { agentId: undefined, selectedId: undefined, sessions: [] };
 
 const listeners = new Set<() => void>();
 
@@ -26,28 +26,34 @@ function getSnapshot() {
 }
 
 function notify() {
-  for (const l of listeners) l();
+  for (const l of listeners) {
+    l();
+  }
 }
 
 async function fetchSessions(agentId: string) {
   try {
     const res = await client.listSessions({ agentId });
-    if (state.agentId !== agentId) return; // stale
+    if (state.agentId !== agentId) {
+      return;
+    }
     const sessions = res.sessions;
     if (sessions.length === 0) {
       const created = await client.createSession({ agentId });
-      if (state.agentId !== agentId) return;
+      if (state.agentId !== agentId) {
+        return;
+      }
       state = {
-        sessions: created.session ? [created.session] : [],
-        selectedId: created.session?.id,
         agentId,
+        selectedId: created.session?.id,
+        sessions: created.session ? [created.session] : [],
       };
     } else {
-      state = { sessions, selectedId: sessions[sessions.length - 1]?.id, agentId };
+      state = { agentId, selectedId: sessions.at(-1)?.id, sessions };
     }
     notify();
-  } catch (err) {
-    console.warn('[ListSessions] Failed:', err);
+  } catch (error: unknown) {
+    console.warn('[ListSessions] Failed:', error);
   }
 }
 
@@ -61,15 +67,17 @@ function selectSession(id: string) {
 async function createSession(agentId: string) {
   try {
     const res = await client.createSession({ agentId });
-    if (!res.session) return;
+    if (!res.session) {
+      return;
+    }
     state = {
-      sessions: [...state.sessions, res.session],
-      selectedId: res.session.id,
       agentId,
+      selectedId: res.session.id,
+      sessions: [...state.sessions, res.session],
     };
     notify();
-  } catch (err) {
-    console.warn('[CreateSession] Failed:', err);
+  } catch (error: unknown) {
+    console.warn('[CreateSession] Failed:', error);
   }
 }
 
@@ -78,14 +86,13 @@ async function removeSession(agentId: string, sessionId: string) {
     await client.deleteSession({ agentId, sessionId });
     const remaining = state.sessions.filter((s) => s.id !== sessionId);
     state = {
-      sessions: remaining,
-      selectedId:
-        state.selectedId === sessionId ? remaining[remaining.length - 1]?.id : state.selectedId,
       agentId,
+      selectedId: state.selectedId === sessionId ? remaining.at(-1)?.id : state.selectedId,
+      sessions: remaining,
     };
     notify();
-  } catch (err) {
-    console.warn('[DeleteSession] Failed:', err);
+  } catch (error: unknown) {
+    console.warn('[DeleteSession] Failed:', error);
   }
 }
 
@@ -93,21 +100,23 @@ export function useSessions(agentId: string | undefined) {
   const snap = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   useEffect(() => {
-    if (!agentId) return;
+    if (!agentId) {
+      return;
+    }
     if (snap.agentId !== agentId) {
-      state = { sessions: [], selectedId: undefined, agentId };
+      state = { agentId, selectedId: undefined, sessions: [] };
       notify();
       fetchSessions(agentId);
     }
-  }, [agentId]);
+  }, [agentId, snap.agentId]);
 
   const selectedSession = snap.sessions.find((s) => s.id === snap.selectedId);
 
   return {
-    sessions: snap.sessions,
-    selectedSession,
-    selectSession,
     createSession: () => agentId && createSession(agentId),
     removeSession: (sessionId: string) => agentId && removeSession(agentId, sessionId),
+    selectedSession,
+    selectSession,
+    sessions: snap.sessions,
   } as const;
 }
