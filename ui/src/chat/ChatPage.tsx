@@ -205,7 +205,14 @@ export default function ChatPage() {
                       }
                       key={msg.id}
                     >
-                      {msg.content}
+                      {msg.content ||
+                        (msg.role === 'assistant' && (
+                          <span className="inline-flex gap-1">
+                            <span className="size-1.5 animate-pulse rounded-full bg-current" />
+                            <span className="size-1.5 animate-pulse rounded-full bg-current [animation-delay:150ms]" />
+                            <span className="size-1.5 animate-pulse rounded-full bg-current [animation-delay:300ms]" />
+                          </span>
+                        ))}
                     </div>
                   ))
                 )}
